@@ -27,9 +27,9 @@
 |---|---|
 | **Date initialized** | 2026-02-19 |
 | **Version** | V1 |
-| **Status** | Scaffolding not started |
+| **Status** | Scaffolding complete — Next.js initialized, awaiting API keys |
 | **Last updated** | 2026-02-19 |
-| **Last updated by** | Repo audit (pre-build) |
+| **Last updated by** | Claude Code bootstrap pass |
 | **Booking spec** | BOOKING_SPEC.md authored; scope promoted in build-spec.md |
 | **Booking mockup decision** | RESOLVED — Path A. Build from existing 3 mockups as layout baseline; spec requirements take precedence where mockups are silent. See BOOKING_SPEC.md §12. FE may proceed. |
 | **Equipment cascade** | RESOLVED — V1 uses single-manager strict-fail. Full cascade DEFERRED V1.1. See BOOKING_SPEC.md §5 and CORE_LOGIC Rule 15. |
@@ -46,8 +46,8 @@
 ## PHASE CHECKLIST
 
 ### V1 — Scaffolding Release
-- [ ] Redirect files created (CLAUDE.md, .cursorrules, GEMINI.md, .antigravity/rules.md)
-- [ ] Next.js 16 project initialized
+- [x] Redirect files created (.cursorrules, .antigravity/rules.md — CLAUDE.md + GEMINI.md already existed)
+- [x] Next.js 16 project initialized (v16.1.6, manual setup, build verified)
 - [ ] Clerk auth configured (10 active test stakeholder accounts; DiveSiteOperator deferred)
 - [ ] `config/clerk-seed-map.json` created (real Clerk IDs)
 - [ ] `proxy.ts` created (Node.js runtime, convexAuthNextjsMiddleware)
@@ -69,7 +69,7 @@
 
 | # | Date | Session Type | Completed | Deferred | Notes |
 |---|---|---|---|---|---|
-| — | — | — | — | — | No sessions started yet |
+| 1 | 2026-02-19 | Bootstrap Pass | .cursorrules, .antigravity/rules.md, config/, Next.js 16 initialized (manual), .gitignore, .env.example, build verified | — | create-next-app blocked by dir name casing; manual setup used instead. Build: ✅ |
 
 ---
 
