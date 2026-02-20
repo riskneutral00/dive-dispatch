@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Riya's Booking Requests | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .status-pill {
+        @apply w-7 h-7 flex items-center justify-center rounded-full text-[10px] font-bold transition-all cursor-default;
+      }
+      .status-pill.active {
+        @apply bg-primary text-white;
+      }
+      .status-pill.inactive {
+        @apply bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600;
+      }
+
+      .form-label {
+        @apply block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5;
+      }
+      .form-value {
+        @apply text-sm font-medium text-slate-800 dark:text-slate-200;
+      }
+
+      .flag-emoji {
+        @apply text-base leading-none inline-flex items-center drop-shadow-sm;
+      }
+
+      .user-panel {
+        @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden;
+      }
+      .user-panel.open {
+        @apply block;
+      }
+      .user-item {
+        @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col selection:bg-primary/20"
+  >
+    <!-- ── Nav ──────────────────────────────────────────────────────── -->
+    <nav
+      class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm"
+    >
+      <div class="px-8 h-16 flex items-center">
+        <!-- Left: Back button -->
+        <div class="flex-1">
+          <a
+            href="../../Instructor/instructor-dashboard.html"
+            class="flex items-center gap-1 text-slate-400 hover:text-primary transition-colors no-underline w-fit"
+          >
+            <span class="material-symbols-outlined text-[20px]"
+              >arrow_back</span
+            >
+            <span class="text-[11px] font-semibold uppercase tracking-widest"
+              >Back</span
+            >
+          </a>
+        </div>
+
+        <!-- Centre: page title -->
+        <span
+          class="text-sm font-semibold text-slate-800 dark:text-white tracking-tight"
+        >
+          Riya's Booking Requests
+        </span>
+
+        <!-- Right: language toggle + theme toggle + user -->
+        <div class="flex-1 flex items-center justify-end gap-3">
+          <!-- Language toggle -->
+          <div
+            class="flex items-center bg-slate-100 dark:bg-slate-800 rounded-full p-0.5 gap-0.5"
+          >
+            <button
+              id="lang-en"
+              onclick="setLang('en')"
+              class="lang-pill px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest bg-primary text-white transition-all"
+            >
+              EN
+            </button>
+            <button
+              id="lang-th"
+              onclick="setLang('th')"
+              class="lang-pill px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 hover:text-slate-600 transition-all"
+            >
+              TH
+            </button>
+          </div>
+
+          <!-- Dark mode toggle -->
+          <button
+            id="darkToggle"
+            class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Toggle dark mode"
+          >
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+
+          <!-- User menu -->
+          <div class="relative" id="user-wrap">
+            <button
+              onclick="toggleUser(event)"
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1"
+            >
+              <div
+                class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+              >
+                R
+              </div>
+              <span
+                class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300"
+              >
+                Riya
+              </span>
+              <span
+                class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block"
+                >expand_more</span
+              >
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="#">
+                <span class="material-symbols-outlined text-[16px]"
+                  >settings</span
+                >
+                Settings
+              </a>
+              <div
+                class="my-1 border-t border-slate-100 dark:border-slate-800"
+              ></div>
+              <a class="user-item hover:text-red-500" href="../landing.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >logout</span
+                >
+                Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Page Content ───────────────────────────────────────────── -->
+    <main class="flex-1 px-4 py-10">
+      <div class="max-w-[700px] mx-auto">
+        <!-- ── Booking Summary Card ──────────────────────────────── -->
+        <div
+          class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm p-6 space-y-6 mb-6"
+        >
+          <!-- Section heading -->
+          <h2
+            class="text-center text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400"
+          >
+            Booking Summary
+          </h2>
+
+          <!-- Fields grid -->
+          <div class="grid grid-cols-2 gap-6">
+            <div>
+              <p class="form-label">Dates</p>
+              <p class="form-value">3/1 – 3/2, 2026</p>
+            </div>
+            <div>
+              <p class="form-label">Dive Type</p>
+              <p class="form-value">Advanced Open Water</p>
+            </div>
+            <div>
+              <p class="form-label">Agency</p>
+              <p class="form-value">PADI</p>
+            </div>
+            <div>
+              <p class="form-label">Specialties</p>
+              <p class="form-value">Nitrox, DPV</p>
+            </div>
+            <div>
+              <p class="form-label">Boat</p>
+              <p class="form-value">Seven Seas</p>
+            </div>
+            <div>
+              <p class="form-label">Dive Center</p>
+              <p class="form-value">Matt &amp; Ms. Mermaid's Dive Center</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Customer List Card ────────────────────────────────── -->
+        <div
+          class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm p-6 mb-6"
+        >
+          <div class="divide-y divide-slate-100 dark:divide-slate-800">
+
+            <!-- Joe Smith -->
+            <div class="flex items-center justify-between py-4 -mx-2 px-2">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
+                >
+                  <span class="material-symbols-outlined text-lg">person</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">Joe Smith</span>
+                    <span class="flag-emoji" title="French">🇫🇷</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="status-pill active">C</div>
+                <div class="status-pill active">M</div>
+                <div class="status-pill inactive">L</div>
+                <div class="status-pill inactive">E</div>
+                <div class="status-pill active bg-blue-500">P</div>
+              </div>
+            </div>
+
+            <!-- Jane Smith -->
+            <div class="flex items-center justify-between py-4 -mx-2 px-2">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400"
+                >
+                  <span class="material-symbols-outlined text-lg">person</span>
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-800 dark:text-slate-200">Jane Smith</span>
+                    <div class="flex gap-1">
+                      <span class="flag-emoji" title="French">🇫🇷</span>
+                      <span class="flag-emoji" title="Spanish">🇪🇸</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="status-pill active">C</div>
+                <div class="status-pill active">M</div>
+                <div class="status-pill active">L</div>
+                <div class="status-pill active">E</div>
+                <div class="status-pill inactive">P</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Handshake Terms Card ──────────────────────────────── -->
+        <div
+          class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm p-6 mb-10"
+        >
+          <h2
+            class="text-center text-[10px] uppercase tracking-[0.2em] font-bold text-slate-400 mb-4"
+          >
+            Your Handshake Terms
+          </h2>
+
+          <ul class="space-y-2 mb-4">
+            <li
+              class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400"
+            >
+              <span class="text-primary mt-0.5 flex-shrink-0">•</span>
+              50% payment guaranteed on cancellation within 48 hours.
+            </li>
+            <li
+              class="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-400"
+            >
+              <span class="text-primary mt-0.5 flex-shrink-0">•</span>
+              72-hour minimum cancellation notice required.
+            </li>
+          </ul>
+
+          <p class="text-[10px] text-slate-400 italic">
+            These terms will be recorded upon acceptance.
+          </p>
+        </div>
+
+        <!-- ── Actions ───────────────────────────────────────────── -->
+        <div class="flex items-center justify-center gap-4">
+          <a
+            href="../../Instructor/instructor-dashboard.html"
+            class="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 text-slate-400 font-bold py-4 px-8 w-48 text-[11px] uppercase tracking-widest rounded-lg hover:text-slate-600 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700 transition-all text-center no-underline"
+          >
+            Decline
+          </a>
+          <a
+            href="../../Instructor/instructor-dashboard.html"
+            class="bg-primary hover:bg-primary/90 text-white font-bold py-4 px-8 w-48 text-[11px] uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all text-center no-underline"
+          >
+            Accept Booking
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      // Dark mode toggle is handled inline via nav — no fixed toggle needed for this page
+      // (dark mode can be toggled from the browser for mockup purposes)
+    </script>
+  </body>
+</html>

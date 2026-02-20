@@ -1,0 +1,287 @@
+<!doctype html>
+<html class="" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Medical Form | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .form-input {
+        @apply w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600 transition-all;
+      }
+      .form-input:focus {
+        border-color: #1978e5;
+        outline: none;
+        box-shadow: 0 0 0 1px #1978e5;
+      }
+      .form-label {
+        @apply block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5;
+      }
+      .step-icon {
+        @apply w-10 h-10 flex items-center justify-center rounded-full text-[12px] font-bold;
+      }
+      .step-done {
+        @apply bg-emerald-500 text-white;
+      }
+      .step-current {
+        @apply bg-primary text-white;
+      }
+      .step-pending {
+        @apply text-slate-400;
+      }
+      .yes-no-row {
+        @apply flex items-center justify-between gap-4 py-3 border-b border-slate-100 dark:border-slate-800 last:border-0;
+      }
+      .yes-no-question {
+        @apply flex-1 text-sm text-slate-700 dark:text-slate-300 leading-relaxed;
+      }
+      .yes-no-buttons {
+        @apply flex items-center gap-1 flex-shrink-0;
+      }
+      .yn-btn {
+        @apply px-3 py-1.5 rounded text-[11px] font-bold uppercase tracking-wider border transition-all;
+      }
+      .yn-btn.yes-selected   { @apply bg-red-500 border-red-500 text-white; }
+      .yn-btn.no-selected    { @apply bg-emerald-500 border-emerald-500 text-white; }
+      .yn-btn.yn-unselected  { @apply bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:border-slate-400; }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col selection:bg-primary/20"
+  >
+
+    <!-- Minimal header -->
+    <header class="bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900">
+      <div class="max-w-[600px] mx-auto px-5 h-14 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Dive Dispatch</p>
+          <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Matt &amp; Ms. Mermaid's Dive Center</p>
+        </div>
+        <button
+          id="darkToggle"
+          class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="Toggle dark mode"
+        >
+          <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-grow py-8 px-5">
+      <div class="max-w-[600px] mx-auto">
+
+        <!-- Booking context banner -->
+        <div class="mb-6 p-4 bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your Booking</p>
+            <p class="text-[11px] font-bold px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full">1 of 4 forms done</p>
+          </div>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Advanced Open Water — PADI</p>
+              <p class="text-xs text-slate-400 mt-0.5">March 1 – 2, 2025 · Matt &amp; Ms. Mermaid's Dive Center</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress tracker -->
+        <div class="mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+          <div class="flex items-center justify-between gap-3">
+            <!-- Contact -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-done">
+                <span class="material-symbols-outlined text-[18px]">check</span>
+              </div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Contact</p>
+            </div>
+            <!-- Medical -->
+            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-current">2</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Medical</p>
+            </div>
+            <!-- Liability -->
+            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-pending">3</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Liability</p>
+            </div>
+            <!-- Equipment -->
+            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-pending">4</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Equipment</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form class="space-y-6" onsubmit="event.preventDefault(); window.location.href='customer-portal-liability.html'">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Medical Questionnaire</h2>
+            <p class="text-xs text-slate-400 leading-relaxed">Diver Medical | Participant Questionnaire (PADI 10346). Please answer all questions honestly.</p>
+          </div>
+
+          <!-- PADI Intro -->
+          <div class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+            Recreational scuba diving and freediving requires good physical and mental health. There are a few medical conditions which can be hazardous while diving. This questionnaire provides a basis to determine if you should seek out a physician's evaluation. Answer all questions honestly.
+            <br/><br/>
+            <strong class="text-slate-700 dark:text-slate-300">Note to women:</strong> If you are pregnant, or attempting to become pregnant, do not dive.
+          </div>
+
+          <!-- Questions -->
+          <div class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800 overflow-hidden p-5 space-y-0">
+
+            <!-- Q1 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">1. I have had problems with my lungs/breathing, heart, blood, or have been diagnosed with COVID-19.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q2 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">2. I am over 45 years of age.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q3 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">3. I struggle to perform moderate exercise (walk 1.6 km/one mile in 14 minutes) or swim 200 m/yards without resting.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q4 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">4. I have had problems with my eyes, ears, or nasal passages/sinuses.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q5 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">5. I have had surgery within the last 12 months, or ongoing problems related to past surgery.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q6 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">6. I have lost consciousness, had migraine headaches, seizures, stroke, or significant head injury.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q7 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">7. I am currently undergoing treatment for psychological problems, panic attacks, or addiction.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q8 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">8. I have had back problems, hernia, ulcers, or diabetes.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q9 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">9. I have had stomach or intestine problems, including recent diarrhea.</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+            <!-- Q10 -->
+            <div class="yes-no-row">
+              <span class="yes-no-question">10. I am taking prescription medications (except birth control or anti-malarial drugs other than mefloquine).</span>
+              <div class="yes-no-buttons">
+                <button type="button" class="yn-btn yn-unselected mr-1">Yes</button>
+                <button type="button" class="yn-btn yn-unselected">No</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Participant statement -->
+          <div class="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800">
+            <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              I have answered all questions honestly, and understand that I accept responsibility for any consequences resulting from any questions I may have answered inaccurately or for my failure to disclose any existing or past health conditions.
+            </p>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button type="submit" class="px-8 py-3 bg-primary text-white rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+              Submit Form
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </main>
+
+    <script>
+      // Dark mode
+      document.getElementById("darkToggle").addEventListener("click", function () {
+        document.documentElement.classList.toggle("dark");
+      });
+    </script>
+  </body>
+</html>

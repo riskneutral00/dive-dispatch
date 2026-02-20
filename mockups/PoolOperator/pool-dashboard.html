@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pool Manager Dashboard | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: { primary: "#1978e5", "background-light": "#f6f7f8", "background-dark": "#111821" },
+            fontFamily: { display: ["Inter", "sans-serif"] },
+            borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body { font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      .nav-link { @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors; }
+      .nav-link.active { @apply text-primary; }
+      .user-panel { @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .user-panel.open { @apply block; }
+      .user-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer; }
+      .widget-card { @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-5; }
+      .widget-title { @apply text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4; }
+      .session-row { @apply flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 border-b border-slate-100 dark:border-slate-800 last:border-0; }
+      .session-info { @apply flex-1; }
+      .session-id { @apply text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1; }
+      .session-title { @apply text-sm font-semibold text-slate-800 dark:text-slate-200; }
+      .session-meta { @apply text-xs text-slate-500 dark:text-slate-400 mt-1.5 flex flex-col gap-1; }
+      .status-badge { @apply inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-semibold whitespace-nowrap; }
+      .status-badge.pending { @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400; }
+      .status-badge.active { @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400; }
+      .status-badge.completed { @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400; }
+      .slot-badge { @apply inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider; }
+      .slot-badge.am { @apply bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400; }
+      .slot-badge.pm { @apply bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400; }
+      .action-btn { @apply text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 border border-primary/30 hover:border-primary/60 px-3 py-1.5 rounded-lg transition-colors no-underline; }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen selection:bg-primary/20">
+    <!-- Nav -->
+    <nav class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm">
+      <div class="px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <span class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white">Dive Dispatch</span>
+          <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">Pool Manager</span>
+        </div>
+        <div class="hidden md:flex items-center gap-8 flex-1 justify-center">
+          <a href="#" class="nav-link active">Sessions</a>
+          <a href="../Shared/Availability/pool-availability.html" class="nav-link">Availability</a>
+        </div>
+        <div class="flex items-center justify-end gap-3">
+          <button id="darkToggle" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle dark mode">
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+          <div class="relative" id="user-wrap">
+            <button onclick="toggleUser(event)" class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+              <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">M</div>
+              <span class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Matt</span>
+              <span class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block">expand_more</span>
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="../Shared/settings.html"><span class="material-symbols-outlined text-[16px]">settings</span>Settings</a>
+              <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
+              <a class="user-item hover:text-red-500" href="../Shared/landing.html"><span class="material-symbols-outlined text-[16px]">logout</span>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-grow py-8 px-8">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-8">Upcoming Sessions</h1>
+
+        <div class="widget-card">
+          <div class="widget-title">Assigned Sessions</div>
+
+          <!-- Session 1 -->
+          <div class="session-row">
+            <div class="session-info">
+              <p class="session-id">SN-026-001</p>
+              <p class="session-title">OW Confined Water — Day 1</p>
+              <div class="session-meta">
+                <span>Feb 16, 2026 · <span class="slot-badge am">AM 08:00–12:00</span></span>
+                <span>4 divers · Aqua Center · Lead: Riya S.</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge active">ACTIVE</span>
+              <a href="#" class="action-btn">Manage</a>
+            </div>
+          </div>
+
+          <!-- Session 2 -->
+          <div class="session-row">
+            <div class="session-info">
+              <p class="session-id">SN-026-002</p>
+              <p class="session-title">Rescue Skill Review</p>
+              <div class="session-meta">
+                <span>Feb 16, 2026 · <span class="slot-badge pm">PM 13:00–17:00</span></span>
+                <span>6 divers · Aqua Center · Lead: Marco F.</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge active">ACTIVE</span>
+              <a href="#" class="action-btn">Manage</a>
+            </div>
+          </div>
+
+          <!-- Session 3 -->
+          <div class="session-row">
+            <div class="session-info">
+              <p class="session-id">SN-026-005</p>
+              <p class="session-title">OW Confined Water — Day 2</p>
+              <div class="session-meta">
+                <span>Feb 19, 2026 · <span class="slot-badge am">AM 08:00–12:00</span></span>
+                <span>4 divers · Aqua Center · Lead: Riya S.</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge pending">PENDING</span>
+              <a href="#" class="action-btn">View</a>
+            </div>
+          </div>
+
+          <!-- Session 4 -->
+          <div class="session-row">
+            <div class="session-info">
+              <p class="session-id">SN-026-008</p>
+              <p class="session-title">DSD Try Dive — Group Session</p>
+              <div class="session-meta">
+                <span>Feb 22, 2026 · <span class="slot-badge pm">PM 13:00–17:00</span></span>
+                <span>8 divers · Aqua Center · Lead: Priya K.</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge pending">PENDING</span>
+              <a href="#" class="action-btn">View</a>
+            </div>
+          </div>
+
+          <!-- Session 5 -->
+          <div class="session-row">
+            <div class="session-info">
+              <p class="session-id">SN-026-003</p>
+              <p class="session-title">AOW Skills Practice</p>
+              <div class="session-meta">
+                <span>Feb 9, 2026 · <span class="slot-badge am">AM 08:00–12:00</span></span>
+                <span>3 divers · Aqua Center · Lead: Marco F.</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge completed">COMPLETED</span>
+              <a href="#" class="action-btn">View</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function toggleUser(event) { event.stopPropagation(); document.getElementById("user-panel").classList.toggle("open"); }
+      document.addEventListener("click", function () { document.getElementById("user-panel").classList.remove("open"); });
+      document.getElementById("darkToggle").addEventListener("click", function () { document.documentElement.classList.toggle("dark"); });
+    </script>
+  </body>
+</html>

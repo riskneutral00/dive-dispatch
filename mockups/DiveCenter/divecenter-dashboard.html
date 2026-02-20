@@ -1,0 +1,1281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Matt &amp; Ms. Mermaid's | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Nav links */
+      .nav-link {
+        @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors;
+      }
+      .nav-link.active {
+        @apply text-primary;
+      }
+
+      /* Date number bubble */
+      .date-num {
+        @apply w-7 h-7 flex items-center justify-center rounded-full text-sm font-medium text-slate-500 dark:text-slate-400;
+      }
+      .date-num.today {
+        @apply bg-primary text-white font-bold;
+      }
+
+      /* Booking bars (spanning week-row calendar layout) */
+      .bk-bar {
+        @apply absolute text-[9px] leading-tight rounded px-1.5 py-1 cursor-pointer hover:opacity-80 transition-opacity no-underline border border-black;
+      }
+      .diver-line {
+        @apply flex items-baseline justify-between gap-1;
+      }
+      .diver-name {
+        @apply font-medium truncate;
+      }
+      .diver-abbrev {
+        @apply font-bold flex-shrink-0;
+      }
+      .bk-bar.draft {
+        @apply bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400;
+      }
+      .bk-bar.pending {
+        @apply bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400;
+      }
+      .bk-bar.active {
+        @apply bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400;
+      }
+      .bk-bar.completed {
+        @apply bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400;
+      }
+      .bk-bar.cancelled {
+        @apply bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400;
+      }
+
+      /* State badges (sidebar) */
+      .state-badge {
+        @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0;
+      }
+      .state-badge.pending {
+        @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400;
+      }
+      .state-badge.active {
+        @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400;
+      }
+      .state-badge.draft {
+        @apply bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400;
+      }
+
+      /* Sidebar widget card */
+      .widget-card {
+        @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-5;
+      }
+      .widget-title {
+        @apply text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4;
+      }
+
+      /* Resources dropdown */
+      .dropdown-panel {
+        @apply absolute top-full left-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden;
+      }
+      .dropdown-panel.open {
+        @apply block;
+      }
+      .dropdown-item {
+        @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer;
+      }
+
+      /* User dropdown */
+      .user-panel {
+        @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden;
+      }
+      .user-panel.open {
+        @apply block;
+      }
+      .user-item {
+        @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer;
+      }
+
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen selection:bg-primary/20"
+  >
+    <!-- ── Top Nav ──────────────────────────────────────────────────── -->
+    <nav
+      class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm"
+    >
+      <div class="px-8 h-16 flex items-center justify-between">
+        <!-- Logo -->
+        <span
+          class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white"
+        >
+          Dive Dispatch
+        </span>
+
+        <!-- Centre nav -->
+        <div class="flex items-center gap-8">
+          <a class="nav-link active" href="#">Dive Center</a>
+
+          <!-- Resources dropdown trigger -->
+          <div class="relative" id="res-wrap">
+            <button
+              id="res-btn"
+              onclick="toggleResources(event)"
+              class="nav-link flex items-center gap-0.5"
+            >
+              Resources
+              <span
+                class="material-symbols-outlined text-[14px] leading-none"
+                id="res-chevron"
+                >expand_more</span
+              >
+            </button>
+            <div class="dropdown-panel" id="res-panel">
+              <a class="dropdown-item" href="../resources-instructors.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >person</span
+                >
+                Instructors
+              </a>
+              <a class="dropdown-item" href="../resources-boats.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >directions_boat</span
+                >
+                Boats
+              </a>
+              <a class="dropdown-item" href="../resources-equipment.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >inventory_2</span
+                >
+                Equipment
+              </a>
+              <a class="dropdown-item" href="../Shared/Availability/resources-pools.html">
+                <span class="material-symbols-outlined text-[16px]">pool</span>
+                Pools
+              </a>
+              <a class="dropdown-item" href="../resources-compressors.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >compress</span
+                >
+                Compressors
+              </a>
+              <a class="dropdown-item" href="../resources-dive-sites.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >location_on</span
+                >
+                Dive Sites
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: theme toggle + user -->
+        <div class="flex items-center gap-2">
+          <button
+            id="darkToggle"
+            class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Toggle dark mode"
+          >
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+
+          <!-- User menu -->
+          <div class="relative" id="user-wrap">
+            <button
+              onclick="toggleUser(event)"
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1"
+            >
+              <div
+                class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+              >
+                ML
+              </div>
+              <span
+                class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300"
+              >
+                Matt Lee
+              </span>
+              <span
+                class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block"
+                >expand_more</span
+              >
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="#">
+                <span class="material-symbols-outlined text-[16px]"
+                  >settings</span
+                >
+                Settings
+              </a>
+              <div
+                class="my-1 border-t border-slate-100 dark:border-slate-800"
+              ></div>
+              <a class="user-item hover:text-red-500" href="../Shared/landing.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >logout</span
+                >
+                Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Page Content ───────────────────────────────────────────── -->
+    <main class="px-8 py-8 max-w-screen-xl mx-auto">
+      <!-- Page header -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex-1"></div>
+        <h1
+          class="text-3xl font-light tracking-tight text-slate-900 dark:text-white"
+        >
+          Matt &amp; Ms. Mermaid's Dive Center
+        </h1>
+        <div class="flex-1 flex justify-end">
+          <a
+            href="../Shared/Booking/booking-new.html"
+            class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg text-[11px] uppercase tracking-widest transition-all shadow-md shadow-primary/20 hover:shadow-primary/30 flex items-center gap-2 no-underline"
+          >
+            <span class="material-symbols-outlined text-base">add</span>
+            New Booking
+          </a>
+        </div>
+      </div>
+
+      <!-- Dashboard layout: calendar -->
+      <div>
+        <!-- ── Calendar ─────────────────────────────────────────── -->
+        <div
+          class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden"
+        >
+          <!-- Calendar header -->
+          <div
+            class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800"
+          >
+            <div class="flex items-center gap-2">
+              <button
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <span class="material-symbols-outlined text-lg"
+                  >chevron_left</span
+                >
+              </button>
+              <h2
+                class="text-sm font-semibold text-slate-800 dark:text-white w-36 text-center"
+              >
+                February 2026
+              </h2>
+              <button
+                class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+              >
+                <span class="material-symbols-outlined text-lg"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+            <button
+              class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700"
+            >
+              Today
+            </button>
+          </div>
+
+          <!-- Day-of-week headers -->
+          <div
+            class="grid grid-cols-7 border-b border-slate-100 dark:border-slate-800"
+          >
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Sun
+            </div>
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Mon
+            </div>
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Tue
+            </div>
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Wed
+            </div>
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Thu
+            </div>
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Fri
+            </div>
+            <div
+              class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400"
+            >
+              Sat
+            </div>
+          </div>
+
+          <!-- Calendar grid — February 2026 (starts Sunday Feb 1) -->
+          <!-- Each week: date-numbers row + events row -->
+          <div class="divide-y divide-slate-100 dark:divide-slate-800">
+            <!-- ── Week 1: Feb 1–7 ── -->
+            <div>
+              <div
+                class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800"
+              >
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">1</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">2</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">3</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">4</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">5</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">6</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">7</span>
+                </div>
+              </div>
+              <div id="week-1-events"></div>
+            </div>
+
+            <!-- ── Week 2: Feb 8–14 ── -->
+            <div>
+              <div
+                class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800"
+              >
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">8</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">9</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">10</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">11</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">12</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">13</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">14</span>
+                </div>
+              </div>
+              <div id="week-2-events"></div>
+            </div>
+
+            <!-- ── Week 3: Feb 15–21 (TODAY = Feb 15 Sun) ── -->
+            <div>
+              <div
+                class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800"
+              >
+                <div
+                  class="px-2 pt-2 pb-1 flex justify-end bg-blue-50/60 dark:bg-blue-950/20"
+                >
+                  <span class="date-num today">15</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">16</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">17</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">18</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">19</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">20</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">21</span>
+                </div>
+              </div>
+              <div id="week-3-events"></div>
+            </div>
+
+            <!-- ── Week 4: Feb 22–28 ── -->
+            <div>
+              <div
+                class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800"
+              >
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">22</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">23</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">24</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">25</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">26</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">27</span>
+                </div>
+                <div class="px-2 pt-2 pb-1 flex justify-end">
+                  <span class="date-num">28</span>
+                </div>
+              </div>
+              <div id="week-4-events"></div>
+            </div>
+          </div>
+
+          <!-- Legend -->
+          <div
+            class="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-5 flex-wrap"
+          >
+            <span
+              class="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600"
+              >Status</span
+            >
+            <div class="flex items-center gap-1.5">
+              <span
+                class="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 flex-shrink-0"
+              ></span>
+              <span class="text-[10px] text-slate-400">Draft</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span
+                class="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0"
+              ></span>
+              <span class="text-[10px] text-slate-400">Pending</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span
+                class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"
+              ></span>
+              <span class="text-[10px] text-slate-400">Active</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span
+                class="w-2 h-2 rounded-full bg-primary flex-shrink-0"
+              ></span>
+              <span class="text-[10px] text-slate-400">Completed</span>
+            </div>
+          </div>
+        </div>
+        <!-- end calendar -->
+      </div>
+    </main>
+
+    <!-- ── Course duration rules (inlined) ── -->
+    <script>
+      const COURSE_DURATIONS = { OW: 3, AOW: 2, "O+A": 4, "AOW+FD": 3, FD: 1, TD: 1 };
+      const COURSE_LABELS = { OW: "Open Water", AOW: "Adv. Open Water", "O+A": "OW + AOW", "AOW+FD": "AOW + Fun Dive", FD: "Fun Dive", TD: "Try Dive" };
+      function colsFor(courseType, startCol) {
+        const duration = COURSE_DURATIONS[courseType] ?? 1;
+        const end = Math.min(startCol + duration, 7);
+        return Array.from({ length: end - startCol }, (_, i) => startCol + i);
+      }
+      function withCols(rawBookings) {
+        return rawBookings.map(function (b) {
+          return Object.assign({}, b, { cols: colsFor(b.courseType, b.startCol) });
+        });
+      }
+    </script>
+
+    <!-- ── Greedy Skyline Packing Algorithm (inlined from pack-weeks.js) ── -->
+    <script>
+      const COL_POSITIONS = [
+        { left: "2px" },
+        { left: "calc(14.286% + 2px)" },
+        { left: "calc(28.571% + 2px)" },
+        { left: "calc(42.857% + 2px)" },
+        { left: "calc(57.143% + 2px)" },
+        { left: "calc(71.429% + 2px)" },
+        { left: "calc(85.714% + 2px)" },
+      ];
+      const COL_WIDTHS = {
+        1: "calc(14.286% - 4px)",
+        2: "calc(28.571% - 4px)",
+        3: "calc(42.857% - 4px)",
+        4: "calc(57.143% - 4px)",
+        5: "calc(71.429% - 4px)",
+        6: "calc(85.714% - 4px)",
+        7: "calc(100% - 4px)",
+      };
+      const DIVER_HEIGHT = 12;
+      const PADDING = 10;
+      const GAP = 2;
+
+      function bookingHeight(diverCount) {
+        return diverCount * DIVER_HEIGHT + PADDING + GAP;
+      }
+
+      function pack(bookings) {
+        const skyline = [0, 0, 0, 0, 0, 0, 0];
+        const placed = [];
+        const remaining = bookings.map((b, i) => ({ ...b, idx: i }));
+
+        while (remaining.length > 0) {
+          for (const b of remaining) {
+            b.ey = Math.max(...b.cols.map((c) => skyline[c]));
+          }
+          remaining.sort((a, b) => {
+            if (a.ey !== b.ey) return a.ey - b.ey;
+            if (a.cols.length !== b.cols.length)
+              return a.cols.length - b.cols.length;
+            const ha = bookingHeight(a.divers.length);
+            const hb = bookingHeight(b.divers.length);
+            if (ha !== hb) return ha - hb;
+            const ca =
+              a.cols.reduce((s, c) => s + Math.abs(c - 3), 0) / a.cols.length;
+            const cb =
+              b.cols.reduce((s, c) => s + Math.abs(c - 3), 0) / b.cols.length;
+            return ca - cb;
+          });
+          const best = remaining.shift();
+          const h = bookingHeight(best.divers.length);
+          best.y = best.ey;
+          for (const c of best.cols) {
+            skyline[c] = best.y + h;
+          }
+          placed.push(best);
+        }
+        return { placed, height: Math.max(...skyline) };
+      }
+
+      function toHTML(placed, height, weekLabel) {
+        placed.sort((a, b) => a.y - b.y || a.cols[0] - b.cols[0]);
+        let html = `<div class="relative w-full" style="height: ${height}px;">`;
+
+        for (const b of placed) {
+          const left = COL_POSITIONS[b.cols[0]].left;
+          const width = COL_WIDTHS[b.cols.length];
+          html += `<a href="#" class="bk-bar ${b.status}" style="left:${left}; width:${width}; top:${b.y}px;">`;
+          for (const d of b.divers) {
+            html += `<div class="diver-line"><span class="diver-name">${d.name}</span><span class="diver-abbrev">${d.abbrev}</span></div>`;
+          }
+          html += `</a>`;
+        }
+        html += `</div>`;
+        return html;
+      }
+
+      // ─── WEEK 1: Feb 1-7 ──────────────────────────────────
+      const week1 = [
+        {
+          cols: [0, 1],
+          status: "completed",
+          divers: [
+            { name: "Rodriguez M.", abbrev: "FD" },
+            { name: "Osei K.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "completed",
+          divers: [
+            { name: "Chen Wei", abbrev: "OW" },
+            { name: "Park Ji-yeon", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [5, 6],
+          status: "completed",
+          divers: [
+            { name: "Yamamoto K.", abbrev: "AOW" },
+            { name: "Hassan F.", abbrev: "AOW" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "completed",
+          divers: [
+            { name: "Smith J.", abbrev: "OW" },
+            { name: "Torres A.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "completed",
+          divers: [
+            { name: "Nakamura R.", abbrev: "OW" },
+            { name: "Berg L.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "completed",
+          divers: [{ name: "Kim S.", abbrev: "OW" }],
+        },
+        {
+          cols: [0],
+          status: "completed",
+          divers: [{ name: "Davis K.", abbrev: "TD" }],
+        },
+        {
+          cols: [1],
+          status: "completed",
+          divers: [
+            { name: "Wilson P.", abbrev: "FD" },
+            { name: "Adams R.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [0, 1],
+          status: "completed",
+          divers: [
+            { name: "Taylor J.", abbrev: "AOW" },
+            { name: "Harris N.", abbrev: "AOW" },
+          ],
+        },
+        {
+          cols: [5],
+          status: "completed",
+          divers: [{ name: "Martinez L.", abbrev: "FD" }],
+        },
+        {
+          cols: [3, 4, 5],
+          status: "completed",
+          divers: [
+            { name: "Anderson R.", abbrev: "TD" },
+            { name: "Thomas P.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [6],
+          status: "completed",
+          divers: [
+            { name: "Jackson M.", abbrev: "TD" },
+            { name: "Robinson K.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [0],
+          status: "completed",
+          divers: [{ name: "Young S.", abbrev: "TD" }],
+        },
+        {
+          cols: [5, 6],
+          status: "completed",
+          divers: [
+            { name: "King D.", abbrev: "FD" },
+            { name: "Scott B.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [4],
+          status: "completed",
+          divers: [{ name: "Green A.", abbrev: "FD" }],
+        },
+        {
+          cols: [1, 2],
+          status: "completed",
+          divers: [
+            { name: "Baker C.", abbrev: "AOW" },
+            { name: "Turner M.", abbrev: "AOW" },
+          ],
+        },
+        {
+          cols: [3],
+          status: "completed",
+          divers: [{ name: "Hall L.", abbrev: "TD" }],
+        },
+        {
+          cols: [4, 5, 6],
+          status: "completed",
+          divers: [
+            { name: "Allen Y.", abbrev: "OW" },
+            { name: "Wright F.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [6],
+          status: "completed",
+          divers: [{ name: "Lewis R.", abbrev: "FD" }],
+        },
+        {
+          cols: [0, 1],
+          status: "completed",
+          divers: [
+            { name: "Moore T.", abbrev: "TD" },
+            { name: "Hill D.", abbrev: "TD" },
+          ],
+        },
+      ];
+
+      // ─── WEEK 2: Feb 8-14 ──────────────────────────────────
+      const week2 = [
+        {
+          cols: [0],
+          status: "completed",
+          divers: [
+            { name: "Kim D.", abbrev: "TD" },
+            { name: "Petrov A.", abbrev: "TD" },
+            { name: "Santos R.", abbrev: "TD" },
+            { name: "Mueller H.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [1, 2, 3],
+          status: "completed",
+          divers: [
+            { name: "Singh R.", abbrev: "OW" },
+            { name: "Nakamura T.", abbrev: "OW" },
+            { name: "Park S.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [4, 5],
+          status: "completed",
+          divers: [
+            { name: "Volkov D.", abbrev: "FD" },
+            { name: "Chen X.", abbrev: "FD" },
+            { name: "Ali M.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [6],
+          status: "active",
+          divers: [
+            { name: "Valentina Conti", abbrev: "AOW" },
+            { name: "Marco Ferretti", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "completed",
+          divers: [
+            { name: "Garcia L.", abbrev: "AOW+FD" },
+            { name: "Brown S.", abbrev: "AOW+FD" },
+          ],
+        },
+        {
+          cols: [5, 6],
+          status: "completed",
+          divers: [{ name: "Weber M.", abbrev: "FD" }],
+        },
+        {
+          cols: [5, 6],
+          status: "active",
+          divers: [{ name: "Sofia Esposito", abbrev: "O+A" }],
+        },
+        {
+          cols: [0],
+          status: "completed",
+          divers: [{ name: "Petrov M.", abbrev: "TD" }],
+        },
+        {
+          cols: [1],
+          status: "completed",
+          divers: [
+            { name: "O'Brien K.", abbrev: "FD" },
+            { name: "Murphy S.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [3],
+          status: "completed",
+          divers: [{ name: "Wagner H.", abbrev: "TD" }],
+        },
+        {
+          cols: [6],
+          status: "completed",
+          divers: [{ name: "Johansson E.", abbrev: "FD" }],
+        },
+        {
+          cols: [0, 1],
+          status: "completed",
+          divers: [
+            { name: "Russo A.", abbrev: "TD" },
+            { name: "Bianchi F.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "completed",
+          divers: [
+            { name: "Fischer T.", abbrev: "OW" },
+            { name: "Becker L.", abbrev: "OW" },
+            { name: "Hoffman J.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [5],
+          status: "completed",
+          divers: [{ name: "Dumont P.", abbrev: "TD" }],
+        },
+        {
+          cols: [3, 4],
+          status: "completed",
+          divers: [
+            { name: "Novak J.", abbrev: "FD" },
+            { name: "Horvat M.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [0],
+          status: "completed",
+          divers: [{ name: "Kato Y.", abbrev: "TD" }],
+        },
+        {
+          cols: [1, 2, 3],
+          status: "completed",
+          divers: [
+            { name: "Dijkstra R.", abbrev: "OW" },
+            { name: "Van den Berg K.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [4],
+          status: "completed",
+          divers: [{ name: "Suzuki M.", abbrev: "FD" }],
+        },
+        {
+          cols: [5, 6],
+          status: "completed",
+          divers: [
+            { name: "Eriksson L.", abbrev: "AOW" },
+            { name: "Lindqvist P.", abbrev: "AOW" },
+          ],
+        },
+        {
+          cols: [2],
+          status: "completed",
+          divers: [
+            { name: "Costa R.", abbrev: "TD" },
+            { name: "Santos J.", abbrev: "TD" },
+            { name: "Silva A.", abbrev: "TD" },
+          ],
+        },
+      ];
+
+      // ─── WEEK 3: Feb 15-21 ──────────────────────────────────
+      const week3 = [
+        {
+          cols: [0],
+          status: "active",
+          divers: [
+            { name: "Valentina Conti", abbrev: "AOW" },
+            { name: "Marco Ferretti", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Shi Zhen", abbrev: "TD" },
+            { name: "Liang Hua", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "pending",
+          divers: [
+            { name: "Bernstein E.", abbrev: "OW" },
+            { name: "Tanaka H.", abbrev: "OW" },
+            { name: "Lopez C.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [0, 1],
+          status: "active",
+          divers: [{ name: "Sofia Esposito", abbrev: "O+A" }],
+        },
+        {
+          cols: [3, 4, 5],
+          status: "pending",
+          divers: [
+            { name: "Ahmed S.", abbrev: "AOW+FD" },
+            { name: "Reyes A.", abbrev: "AOW+FD" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Wang Fang", abbrev: "TD" },
+            { name: "Li Ming", abbrev: "TD" },
+            { name: "Zhang Wei", abbrev: "TD" },
+            { name: "Liu Yang", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [4, 5, 6],
+          status: "pending",
+          divers: [
+            { name: "Kowalski P.", abbrev: "OW" },
+            { name: "Dubois C.", abbrev: "OW" },
+            { name: "Lee M.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Chen Jing", abbrev: "TD" },
+            { name: "Yang Xiao", abbrev: "TD" },
+            { name: "Huang Lei", abbrev: "TD" },
+            { name: "Zhou Ting", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [4],
+          status: "pending",
+          divers: [
+            { name: "Isabella Russo", abbrev: "FD" },
+            { name: "Chiara Lombardi", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [6],
+          status: "draft",
+          divers: [
+            { name: "Johnson B.", abbrev: "TD" },
+            { name: "White C.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [0, 1, 2, 3],
+          status: "active",
+          divers: [
+            { name: "Isabella Russo", abbrev: "O+A" },
+            { name: "Chiara Lombardi", abbrev: "O+A" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Wu Qian", abbrev: "TD" },
+            { name: "Xu Bo", abbrev: "TD" },
+            { name: "Sun Lin", abbrev: "TD" },
+            { name: "Ma Rui", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Zhu Hao", abbrev: "TD" },
+            { name: "Hu Xin", abbrev: "TD" },
+            { name: "Guo Tao", abbrev: "TD" },
+            { name: "He Yan", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Luo Jie", abbrev: "TD" },
+            { name: "Gao Ning", abbrev: "TD" },
+            { name: "Lin Feng", abbrev: "TD" },
+            { name: "Han Mei", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Tang Chao", abbrev: "TD" },
+            { name: "Deng Shuai", abbrev: "TD" },
+            { name: "Xiao Yu", abbrev: "TD" },
+            { name: "Peng Juan", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [
+            { name: "Cai Hong", abbrev: "TD" },
+            { name: "Zheng Kai", abbrev: "TD" },
+            { name: "Song Wen", abbrev: "TD" },
+            { name: "Xie Peng", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [0],
+          status: "pending",
+          divers: [{ name: "Moreau P.", abbrev: "FD" }],
+        },
+        {
+          cols: [5, 6],
+          status: "pending",
+          divers: [
+            { name: "Takahashi R.", abbrev: "AOW" },
+            { name: "Watanabe K.", abbrev: "AOW" },
+          ],
+        },
+        {
+          cols: [2, 3],
+          status: "draft",
+          divers: [
+            { name: "Müller F.", abbrev: "FD" },
+            { name: "Schneider T.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [6],
+          status: "draft",
+          divers: [{ name: "Ivanov D.", abbrev: "TD" }],
+        },
+      ];
+
+      // ─── WEEK 4: Feb 22-28 ──────────────────────────────────
+      const week4 = [
+        {
+          cols: [0, 1, 2, 3],
+          status: "pending",
+          divers: [
+            { name: "Nakamura S.", abbrev: "OW+FD" },
+            { name: "Torres M.", abbrev: "OW+FD" },
+            { name: "Rossi A.", abbrev: "OW+FD" },
+            { name: "Kim Y.", abbrev: "OW+FD" },
+          ],
+        },
+        {
+          cols: [4, 5, 6],
+          status: "draft",
+          divers: [
+            { name: "Hassan M.", abbrev: "FD" },
+            { name: "Singh A.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [5, 6],
+          status: "draft",
+          divers: [{ name: "Tanaka Y.", abbrev: "AOW" }],
+        },
+        {
+          cols: [0, 1, 2],
+          status: "pending",
+          divers: [
+            { name: "Schmidt O.", abbrev: "OW" },
+            { name: "Ferreira L.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [3, 4, 5],
+          status: "draft",
+          divers: [
+            { name: "Park J.", abbrev: "TD" },
+            { name: "Liu R.", abbrev: "TD" },
+            { name: "Dubois M.", abbrev: "TD" },
+            { name: "Kowalski A.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [6],
+          status: "draft",
+          divers: [
+            { name: "Lee S.", abbrev: "TD" },
+            { name: "Chen W.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [1, 2, 3],
+          status: "pending",
+          divers: [
+            { name: "Nguyen T.", abbrev: "FD" },
+            { name: "Brown T.", abbrev: "FD" },
+            { name: "Kumar A.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [2, 3, 4],
+          status: "pending",
+          divers: [
+            { name: "Ferrara L.", abbrev: "AOW" },
+            { name: "Zhang L.", abbrev: "AOW" },
+          ],
+        },
+        {
+          cols: [0],
+          status: "pending",
+          divers: [{ name: "Popov V.", abbrev: "TD" }],
+        },
+        {
+          cols: [4],
+          status: "draft",
+          divers: [{ name: "Larsen K.", abbrev: "FD" }],
+        },
+        {
+          cols: [6],
+          status: "draft",
+          divers: [{ name: "Sato H.", abbrev: "TD" }],
+        },
+        {
+          cols: [0, 1],
+          status: "pending",
+          divers: [
+            { name: "Patel R.", abbrev: "FD" },
+            { name: "Sharma A.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [5, 6],
+          status: "draft",
+          divers: [
+            { name: "Jensen M.", abbrev: "OW" },
+            { name: "Andersen P.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [1, 2],
+          status: "pending",
+          divers: [{ name: "Gomez C.", abbrev: "AOW" }],
+        },
+        {
+          cols: [3, 4],
+          status: "draft",
+          divers: [
+            { name: "Ito K.", abbrev: "FD" },
+            { name: "Yamada S.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [0],
+          status: "pending",
+          divers: [
+            { name: "Sokolov A.", abbrev: "TD" },
+            { name: "Kuznetsov D.", abbrev: "TD" },
+          ],
+        },
+        {
+          cols: [4, 5, 6],
+          status: "draft",
+          divers: [
+            { name: "Lindberg E.", abbrev: "OW" },
+            { name: "Nilsson G.", abbrev: "OW" },
+            { name: "Olsson H.", abbrev: "OW" },
+          ],
+        },
+        {
+          cols: [1],
+          status: "pending",
+          divers: [{ name: "Reyes J.", abbrev: "TD" }],
+        },
+        {
+          cols: [2, 3],
+          status: "pending",
+          divers: [
+            { name: "Herrera M.", abbrev: "FD" },
+            { name: "Castillo L.", abbrev: "FD" },
+          ],
+        },
+        {
+          cols: [5],
+          status: "draft",
+          divers: [{ name: "Hayashi T.", abbrev: "TD" }],
+        },
+      ];
+
+      // ─── Render on DOM ready ─────────────────────────────────
+      document.addEventListener("DOMContentLoaded", function () {
+        const weeks = [
+          { data: week1, label: "Week 1 (Feb 1-7)", id: "week-1-events" },
+          { data: week2, label: "Week 2 (Feb 8-14)", id: "week-2-events" },
+          { data: week3, label: "Week 3 (Feb 15-21)", id: "week-3-events" },
+          { data: week4, label: "Week 4 (Feb 22-28)", id: "week-4-events" },
+        ];
+        for (const w of weeks) {
+          const el = document.getElementById(w.id);
+          if (!el) continue;
+          const { placed, height } = pack(w.data);
+          el.innerHTML = toHTML(placed, height, w.label);
+        }
+      });
+    </script>
+
+    <script>
+      // Dark mode
+      document
+        .getElementById("darkToggle")
+        .addEventListener("click", function () {
+          document.documentElement.classList.toggle("dark");
+        });
+
+      // Resources dropdown
+      function toggleResources(e) {
+        e.stopPropagation();
+        const panel = document.getElementById("res-panel");
+        const chevron = document.getElementById("res-chevron");
+        const isOpen = panel.classList.toggle("open");
+        chevron.textContent = isOpen ? "expand_less" : "expand_more";
+        document.getElementById("user-panel").classList.remove("open");
+      }
+
+      // User dropdown
+      function toggleUser(e) {
+        e.stopPropagation();
+        document.getElementById("user-panel").classList.toggle("open");
+        document.getElementById("res-panel").classList.remove("open");
+        document.getElementById("res-chevron").textContent = "expand_more";
+      }
+
+      // Close all on outside click
+      document.addEventListener("click", function () {
+        document.getElementById("res-panel").classList.remove("open");
+        document.getElementById("user-panel").classList.remove("open");
+        document.getElementById("res-chevron").textContent = "expand_more";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,113 @@
+{
+  "_note": "Canonical stakeholder-to-mockup mapping. Logical IDs from GLOBAL_CONTEXT.md persona table map to actual file paths. This file is the routing authority — do not re-read the GLOBAL_CONTEXT persona table for file routing once this file exists.",
+  "_updated": "2026-02-19",
+  "stakeholders": {
+    "dc-v1": {
+      "persona": "DiveCenter (Matt @ Ms. Mermaid's)",
+      "role": "dc",
+      "route": "/dc",
+      "mockup": "/mockups/DiveCenter/divecenter-dashboard.html"
+    },
+    "agent-v1": {
+      "persona": "Agent (Global Dive Leads)",
+      "role": "agent",
+      "route": "/agent",
+      "mockup": "/mockups/Agent/agent-dashboard.html"
+    },
+    "liveaboard-v1": {
+      "persona": "Liveaboard (MV Deep Sea)",
+      "role": "liveaboard",
+      "route": "/liveaboard",
+      "mockup": "/mockups/Liveaboard/liveaboard-dashboard.html"
+    },
+    "resort-v1": {
+      "persona": "DiveResort (Blue Coral)",
+      "role": "resort",
+      "route": "/resort",
+      "mockup": "/mockups/DiveResort/diveresort-dashboard.html"
+    },
+    "riya-v1": {
+      "persona": "Instructor (Riya Lee)",
+      "role": "instructor",
+      "route": "/instructor",
+      "mockup": "/mockups/Instructor/instructor-dashboard.html"
+    },
+    "boat-v1": {
+      "persona": "BoatManager (Captain Somchai)",
+      "role": "boat",
+      "route": "/boat",
+      "mockup": "/mockups/BoatOperator/boat-dashboard.html"
+    },
+    "gear-v1": {
+      "persona": "EquipmentManager (Gear Tech)",
+      "role": "gear",
+      "route": "/gear",
+      "mockup": "/mockups/EquipmentManager/equipment-dashboard.html"
+    },
+    "pool-v1": {
+      "persona": "PoolManager (Pool Op)",
+      "role": "pool",
+      "route": "/pool",
+      "mockup": "/mockups/PoolOperator/pool-dashboard.html"
+    },
+    "air-v1": {
+      "persona": "CompressorManager (Air Tech)",
+      "role": "air",
+      "route": "/air",
+      "mockup": "/mockups/CompressorOperator/compressor-dashboard.html"
+    },
+    "site-v1": {
+      "persona": "DiveSiteManager (Permit Liaison)",
+      "role": "site",
+      "route": "/site",
+      "mockup": "/mockups/DiveSiteOperator/dive-site-dashboard.html",
+      "v1_status": "DEFERRED V1.1 — render placeholder page only"
+    },
+    "customer-v1": {
+      "persona": "Customer (End User)",
+      "role": "customer",
+      "route": "/customer",
+      "v1_note": "No Clerk auth — customers access via tokenized BookingLink only (UUID, single-use). No Clerk accounts for customers in V1.",
+      "mockups": {
+        "contact": "/mockups/Customer/customer-portal-contact.html",
+        "medical": "/mockups/Customer/customer-portal-medical.html",
+        "liability": "/mockups/Customer/customer-portal-liability.html",
+        "equipment": "/mockups/Customer/customer-portal-equipment.html",
+        "confirmation": "/mockups/Customer/customer-portal-confirmation.html",
+        "expired": "/mockups/Customer/customer-portal-expired.html"
+      }
+    }
+  },
+  "shared": {
+    "booking": {
+      "detail": "/mockups/Shared/Booking/booking-detail.html",
+      "new": "/mockups/Shared/Booking/booking-new.html",
+      "instructor_request": "/mockups/Shared/Booking/instructor-request.html"
+    },
+    "listAll": {
+      "boats": "/mockups/Shared/ListAll/boats.html",
+      "compressors": "/mockups/Shared/ListAll/compressors.html",
+      "dive_sites": "/mockups/Shared/ListAll/dive-sites.html",
+      "equipment": "/mockups/Shared/ListAll/equipment.html",
+      "instructors": "/mockups/Shared/ListAll/instructors.html",
+      "pools": "/mockups/Shared/ListAll/pools.html"
+    },
+    "availability": {
+      "_note_no_equipment": "No equipment availability view — equipment uses Pooled inventory model (count-based via AvailabilitySnapshot, not calendar-based). Managed through the booking flow.",
+      "boat": "/mockups/Shared/Availability/boat-availability.html",
+      "compressor": "/mockups/Shared/Availability/compressor-availability.html",
+      "dive_site": "/mockups/Shared/Availability/dive-site-availability.html",
+      "instructor": "/mockups/Shared/Availability/instructor-availability.html",
+      "pool": "/mockups/Shared/Availability/pool-availability.html"
+    },
+    "auth": {
+      "landing": "/mockups/Shared/landing.html",
+      "signin": "/mockups/Shared/signin.html",
+      "signup": "/mockups/Shared/signup.html"
+    },
+    "misc": {
+      "help": "/mockups/Shared/help.html",
+      "settings": "/mockups/Shared/settings.html"
+    }
+  }
+}

@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boats | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = { darkMode: "class", theme: { extend: { colors: { primary: "#1978e5", "background-light": "#f6f7f8", "background-dark": "#111821" }, fontFamily: { display: ["Inter", "sans-serif"] }, borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" } } } };
+    </script>
+    <style type="text/tailwindcss">
+      body { font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; }
+      .nav-link { @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary transition-colors; }
+      .nav-link.active { @apply text-primary; }
+      .dropdown-panel { @apply absolute top-full left-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .dropdown-panel.open { @apply block; }
+      .dropdown-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors no-underline; }
+      .dropdown-item.active { @apply text-primary bg-primary/5 dark:bg-primary/10; }
+      .user-panel { @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .user-panel.open { @apply block; }
+      .user-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer; }
+      .filter-label { @apply text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-1.5 block; }
+      .filter-select { @apply text-[11px] font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 pr-8 focus:outline-none; }
+      .resource-card { @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-5 flex flex-col gap-4; }
+      .avail-badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold; }
+      .avail-badge.available { @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400; }
+      .avail-badge.busy { @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400; }
+      .assign-btn { @apply w-full text-center text-[10px] font-bold uppercase tracking-widest text-primary hover:text-white hover:bg-primary border border-primary/40 hover:border-primary rounded-lg py-2 transition-all cursor-pointer; }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen">
+    <nav class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm">
+      <div class="px-8 h-16 flex items-center justify-between">
+        <span class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white">Dive Dispatch</span>
+        <div class="flex items-center gap-8">
+          <a class="nav-link" href="DiveCenter/dc-dashboard.html">Dashboard</a>
+          <div class="relative" id="res-wrap">
+            <button id="res-btn" onclick="toggleResources(event)" class="nav-link active flex items-center gap-0.5">Resources<span class="material-symbols-outlined text-[14px] leading-none" id="res-chevron">expand_more</span></button>
+            <div class="dropdown-panel" id="res-panel">
+              <a class="dropdown-item" href="resources-instructors.html"><span class="material-symbols-outlined text-[16px]">person</span>Instructors</a>
+              <a class="dropdown-item active" href="resources-boats.html"><span class="material-symbols-outlined text-[16px]">directions_boat</span>Boats</a>
+              <a class="dropdown-item" href="resources-equipment.html"><span class="material-symbols-outlined text-[16px]">inventory_2</span>Equipment</a>
+              <a class="dropdown-item" href="Shared/Availability/resources-pools.html"><span class="material-symbols-outlined text-[16px]">pool</span>Pools</a>
+              <a class="dropdown-item" href="resources-compressors.html"><span class="material-symbols-outlined text-[16px]">compress</span>Compressors</a>
+              <a class="dropdown-item" href="resources-dive-sites.html"><span class="material-symbols-outlined text-[16px]">location_on</span>Dive Sites</a>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="darkToggle" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined text-[18px]">dark_mode</span></button>
+          <div class="relative" id="user-wrap">
+            <button onclick="toggleUser(event)" class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+              <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold">ML</div>
+              <span class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Matt Lee</span>
+              <span class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block">expand_more</span>
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="Shared/settings.html"><span class="material-symbols-outlined text-[16px]">settings</span>Settings</a>
+              <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
+              <a class="user-item hover:text-red-500" href="Shared/landing.html"><span class="material-symbols-outlined text-[16px]">logout</span>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="px-8 py-8 max-w-screen-xl mx-auto">
+      <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-light tracking-tight text-slate-900 dark:text-white">Boats</h1>
+        <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">5 boats · 3 available</p>
+      </div>
+
+      <div class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-4 mb-6 flex flex-wrap items-end gap-4">
+        <div>
+          <label class="filter-label">Capacity (min)</label>
+          <select class="filter-select">
+            <option>Any</option>
+            <option>6+ pax</option>
+            <option>10+ pax</option>
+            <option>20+ pax</option>
+          </select>
+        </div>
+        <div>
+          <label class="filter-label">Availability</label>
+          <input type="date" value="2026-02-16" class="filter-select" />
+        </div>
+        <div>
+          <label class="filter-label">Destination</label>
+          <select class="filter-select">
+            <option>Any Site</option>
+            <option>Hin Daeng</option>
+            <option>Similan Islands</option>
+            <option>Phi Phi</option>
+          </select>
+        </div>
+        <button class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary px-3 py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700 self-end">Clear</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+        <div class="resource-card">
+          <div class="flex items-start justify-between">
+            <div class="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center mb-1">
+              <span class="material-symbols-outlined text-slate-400 text-[40px]">directions_boat</span>
+            </div>
+          </div>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Twin Waves</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Phi Phi Islands · Cap. 12 divers</p>
+            </div>
+            <span class="avail-badge busy">Booked</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Operator: Matt &amp; Ms. Mermaid's DC</p>
+          <button class="assign-btn">Assign</button>
+        </div>
+
+        <div class="resource-card">
+          <div class="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-slate-400 text-[40px]">directions_boat</span>
+          </div>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Speed Demon</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Krabi · Cap. 6 divers</p>
+            </div>
+            <span class="avail-badge available">Available</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Operator: Andaman Boats Co.</p>
+          <button class="assign-btn">Assign</button>
+        </div>
+
+        <div class="resource-card">
+          <div class="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-slate-400 text-[40px]">directions_boat</span>
+          </div>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Blue Horizon</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Phuket · Cap. 20 divers</p>
+            </div>
+            <span class="avail-badge available">Available</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Operator: Blue Horizon DC</p>
+          <button class="assign-btn">Assign</button>
+        </div>
+
+        <div class="resource-card">
+          <div class="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-slate-400 text-[40px]">directions_boat</span>
+          </div>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Reef Runner</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Similan · Cap. 12 divers</p>
+            </div>
+            <span class="avail-badge available">Available</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Operator: Similan Dive Tours</p>
+          <button class="assign-btn">Assign</button>
+        </div>
+
+        <div class="resource-card">
+          <div class="w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-slate-400 text-[40px]">directions_boat</span>
+          </div>
+          <div class="flex items-start justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Ocean Pearl</p>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">Koh Tao · Cap. 8 divers</p>
+            </div>
+            <span class="avail-badge busy">Booked</span>
+          </div>
+          <p class="text-[11px] text-slate-500 dark:text-slate-400">Operator: Koh Tao Divers</p>
+          <button class="assign-btn">Assign</button>
+        </div>
+
+      </div>
+    </main>
+
+    <script>
+      document.getElementById("darkToggle").addEventListener("click", function () { document.documentElement.classList.toggle("dark"); });
+      function toggleResources(e) { e.stopPropagation(); const panel = document.getElementById("res-panel"); const chevron = document.getElementById("res-chevron"); const isOpen = panel.classList.toggle("open"); chevron.textContent = isOpen ? "expand_less" : "expand_more"; document.getElementById("user-panel").classList.remove("open"); }
+      function toggleUser(e) { e.stopPropagation(); document.getElementById("user-panel").classList.toggle("open"); document.getElementById("res-panel").classList.remove("open"); document.getElementById("res-chevron").textContent = "expand_more"; }
+      document.addEventListener("click", function () { document.getElementById("res-panel").classList.remove("open"); document.getElementById("user-panel").classList.remove("open"); document.getElementById("res-chevron").textContent = "expand_more"; });
+    </script>
+  </body>
+</html>

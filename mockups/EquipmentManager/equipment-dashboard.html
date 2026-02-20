@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Equipment Manager Dashboard | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .nav-link {
+        @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors;
+      }
+      .nav-link.active {
+        @apply text-primary;
+      }
+      .user-panel {
+        @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden;
+      }
+      .user-panel.open {
+        @apply block;
+      }
+      .user-item {
+        @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer;
+      }
+      .widget-card {
+        @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800;
+      }
+      .widget-title {
+        @apply text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 px-5 pt-5 pb-0 mb-4;
+      }
+      .booking-row {
+        @apply flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-5 py-4 border-b border-slate-100 dark:border-slate-800 last:border-0;
+      }
+      .booking-info {
+        @apply flex-1;
+      }
+      .booking-id {
+        @apply text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1;
+      }
+      .booking-title {
+        @apply text-sm font-semibold text-slate-800 dark:text-slate-200;
+      }
+      .booking-meta {
+        @apply text-xs text-slate-500 dark:text-slate-400 mt-1.5 flex flex-col gap-1;
+      }
+      .equipment-list {
+        @apply text-xs text-slate-600 dark:text-slate-300 space-y-0.5 mt-2;
+      }
+      .status-badge {
+        @apply inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-semibold whitespace-nowrap;
+      }
+      .status-badge.not-requested {
+        @apply bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300;
+      }
+      .status-badge.requested {
+        @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400;
+      }
+      .status-badge.allocated {
+        @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400;
+      }
+      .action-btn {
+        @apply px-4 py-2 bg-primary text-white rounded text-[10px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-all;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen selection:bg-primary/20"
+  >
+    <!-- ── Top Nav ──────────────────────────────────────────────────── -->
+    <nav
+      class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm"
+    >
+      <div class="px-8 h-16 flex items-center justify-between">
+        <!-- Left: Logo + role -->
+        <div class="flex items-center gap-4">
+          <span
+            class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white"
+          >
+            Dive Dispatch
+          </span>
+          <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            Equipment Manager
+          </span>
+        </div>
+
+        <!-- Center nav links -->
+        <div class="hidden md:flex items-center gap-8 flex-1 justify-center">
+          <a href="#" class="nav-link active">Equipment Requests</a>
+        </div>
+
+        <!-- Right: theme toggle + user -->
+        <div class="flex items-center justify-end gap-3">
+          <!-- Dark mode toggle -->
+          <button
+            id="darkToggle"
+            class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Toggle dark mode"
+          >
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+
+          <!-- User menu -->
+          <div class="relative" id="user-wrap">
+            <button
+              onclick="toggleUser(event)"
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1"
+            >
+              <div
+                class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+              >
+                M
+              </div>
+              <span
+                class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300"
+              >
+                Matt
+              </span>
+              <span
+                class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block"
+                >expand_more</span
+              >
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="../Shared/settings.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >settings</span
+                >
+                Settings
+              </a>
+              <div
+                class="my-1 border-t border-slate-100 dark:border-slate-800"
+              ></div>
+              <a class="user-item hover:text-red-500" href="../Shared/landing.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >logout</span
+                >
+                Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-grow py-8 px-8">
+      <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-8">Equipment Allocation</h1>
+
+        <!-- Equipment requests table -->
+        <div class="widget-card overflow-hidden">
+          <div class="widget-title">Upcoming Bookings with Equipment Requests</div>
+
+          <!-- Booking 1 -->
+          <div class="booking-row">
+            <div class="booking-info flex-1">
+              <p class="booking-id">BK-2025-001</p>
+              <p class="booking-title">Coral Reef Exploration</p>
+              <div class="booking-meta">
+                <span>4 customers · March 1, 2025</span>
+              </div>
+              <div class="equipment-list">
+                <div>• Wetsuits: S ×2, M ×2</div>
+                <div>• Fins: M ×2, L ×2</div>
+                <div>• BCD: M ×3, L ×1</div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 items-end">
+              <span class="status-badge allocated">ALLOCATED</span>
+              <button class="action-btn">View</button>
+            </div>
+          </div>
+
+          <!-- Booking 2 -->
+          <div class="booking-row">
+            <div class="booking-info flex-1">
+              <p class="booking-id">BK-2025-008</p>
+              <p class="booking-title">Advanced Open Water Course</p>
+              <div class="booking-meta">
+                <span>6 customers · March 2–3, 2025</span>
+              </div>
+              <div class="equipment-list">
+                <div>• Wetsuits: XS ×1, S ×2, M ×2, L ×1</div>
+                <div>• Fins: S ×1, M ×3, L ×2</div>
+                <div>• BCD: S ×1, M ×3, L ×2</div>
+                <div>• Tanks: HP100 ×12 (doubles ×4)</div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 items-end">
+              <span class="status-badge requested">REQUESTED</span>
+              <button class="action-btn">Allocate</button>
+            </div>
+          </div>
+
+          <!-- Booking 3 -->
+          <div class="booking-row">
+            <div class="booking-info flex-1">
+              <p class="booking-id">BK-2025-015</p>
+              <p class="booking-title">Night Dive Adventure</p>
+              <div class="booking-meta">
+                <span>3 customers · March 7, 2025</span>
+              </div>
+              <div class="equipment-list">
+                <div>• Wetsuits: M ×2, L ×1</div>
+                <div>• Fins: M ×2, L ×1</div>
+                <div>• BCD: M ×2, L ×1</div>
+                <div>• Lights: Backup ×3</div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 items-end">
+              <span class="status-badge not-requested">NOT REQUESTED</span>
+            </div>
+          </div>
+
+          <!-- Booking 4 -->
+          <div class="booking-row">
+            <div class="booking-info flex-1">
+              <p class="booking-id">BK-2025-023</p>
+              <p class="booking-title">Wreck Dive Training</p>
+              <div class="booking-meta">
+                <span>2 customers · March 8–9, 2025</span>
+              </div>
+              <div class="equipment-list">
+                <div>• Wetsuits: M ×1, L ×1</div>
+                <div>• Fins: M ×1, L ×1</div>
+                <div>• BCD: M ×1, L ×1</div>
+                <div>• Reel & Line Kit ×2</div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-2 items-end">
+              <span class="status-badge requested">REQUESTED</span>
+              <button class="action-btn">Allocate</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function toggleUser(event) {
+        event.stopPropagation();
+        const panel = document.getElementById("user-panel");
+        panel.classList.toggle("open");
+      }
+
+      document.addEventListener("click", function() {
+        document.getElementById("user-panel").classList.remove("open");
+      });
+
+      document.getElementById("darkToggle").addEventListener("click", function () {
+        document.documentElement.classList.toggle("dark");
+      });
+    </script>
+  </body>
+</html>

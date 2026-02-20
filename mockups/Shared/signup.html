@@ -1,0 +1,280 @@
+<html class="" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Sign Up | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .input-underline {
+        border: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        background: transparent;
+        border-radius: 0;
+        padding-left: 0;
+        padding-right: 0;
+      }
+      .input-underline:focus {
+        outline: none;
+        box-shadow: none;
+        border-bottom: 1px solid #1978e5;
+      }
+      .stakeholder-btn {
+        @apply w-full py-2.5 px-3 text-[11px] uppercase tracking-wider border border-black/10 transition-all duration-200 text-center text-black/70 bg-white hover:border-black hover:text-black rounded;
+      }
+      .stakeholder-btn.active {
+        @apply bg-primary border-primary text-white hover:bg-opacity-90 hover:border-opacity-90;
+      }
+      .tooltip-bubble {
+        @apply absolute bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-xl p-3 w-48 text-[10px] leading-relaxed tracking-wide text-gray-700 dark:text-slate-200 z-50 pointer-events-none rounded;
+      }
+      .tooltip-bubble::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        border-width: 6px;
+        border-style: solid;
+        transform: translateY(-50%);
+      }
+      .tooltip-left {
+        @apply right-full mr-3 top-1/2 -translate-y-1/2 text-right;
+      }
+      .tooltip-left::after {
+        left: 100%;
+        border-color: transparent transparent transparent white;
+      }
+      .tooltip-left::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 100%;
+        margin-left: 1px;
+        border-width: 7px;
+        border-style: solid;
+        border-color: transparent transparent transparent #e5e7eb;
+        transform: translateY(-50%);
+        z-index: -1;
+      }
+      .tooltip-right {
+        @apply left-full ml-3 top-1/2 -translate-y-1/2 text-left;
+      }
+      .tooltip-right::after {
+        right: 100%;
+        border-color: transparent white transparent transparent;
+      }
+      .tooltip-right::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        margin-right: 1px;
+        border-width: 7px;
+        border-style: solid;
+        border-color: transparent #e5e7eb transparent transparent;
+        transform: translateY(-50%);
+        z-index: -1;
+      }
+      /* Dark mode arrow overrides (class strategy) */
+      .dark .tooltip-left::after  { border-color: transparent transparent transparent #1e293b; }
+      .dark .tooltip-left::before { border-color: transparent transparent transparent #334155; }
+      .dark .tooltip-right::after  { border-color: transparent #1e293b transparent transparent; }
+      .dark .tooltip-right::before { border-color: transparent #334155 transparent transparent; }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display text-slate-900 dark:text-slate-100 selection:bg-primary/20"
+  >
+    <nav
+      class="w-full py-8 px-8 md:px-12 flex justify-between items-center fixed top-0 z-20"
+    >
+      <a
+        class="flex items-center gap-2 text-[11px] font-semibold text-slate-800 dark:text-slate-100 transition-colors duration-200 uppercase tracking-widest hover:text-primary"
+        href="landing.html"
+      >
+        <span class="material-symbols-outlined" style="font-size: 16px"
+          >arrow_back</span
+        >
+        <span class="hidden sm:inline">Back</span>
+      </a>
+      <a
+        class="text-[11px] font-semibold text-slate-800 dark:text-slate-100 transition-colors duration-200 uppercase tracking-widest hover:text-primary"
+        href="#"
+      >
+        Contact
+      </a>
+    </nav>
+    <main
+      class="flex-grow flex items-center justify-center py-24 px-4 sm:px-6 relative z-10"
+    >
+      <div class="w-full max-w-[420px] flex flex-col items-center">
+        <div class="mb-14 text-center">
+          <h1
+            class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white uppercase"
+          >
+            Dive Dispatch
+          </h1>
+        </div>
+        <form class="w-full space-y-10" onsubmit="event.preventDefault(); window.location.href='signin.html'">
+          <div class="space-y-8">
+            <div class="relative group">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 transition-colors group-focus-within:text-primary"
+                for="name"
+                >Name</label
+              >
+              <input
+                class="w-full py-2 input-underline text-sm text-slate-800 dark:text-slate-100 placeholder:text-gray-300"
+                id="name"
+                placeholder="Full name"
+                required=""
+                type="text"
+              />
+            </div>
+            <div class="relative group">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 transition-colors group-focus-within:text-primary"
+                for="email"
+                >Email</label
+              >
+              <input
+                class="w-full py-2 input-underline text-sm text-slate-800 dark:text-slate-100 placeholder:text-gray-300"
+                id="email"
+                placeholder="name@example.com"
+                required=""
+                type="email"
+              />
+            </div>
+            <div class="relative group">
+              <label
+                class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1 transition-colors group-focus-within:text-primary"
+                for="password"
+                >Password</label
+              >
+              <input
+                class="w-full py-2 input-underline text-sm text-slate-800 dark:text-slate-100 placeholder:text-gray-300"
+                id="password"
+                placeholder="••••••••"
+                required=""
+                type="password"
+              />
+            </div>
+          </div>
+          <div class="pt-2">
+            <p
+              class="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-6 text-center"
+            >
+              Select Roles
+            </p>
+            <div class="grid grid-cols-2 gap-x-4 gap-y-3 relative">
+              <div class="flex flex-col gap-3">
+                <button class="stakeholder-btn" type="button">Boat</button>
+                <button class="stakeholder-btn" type="button">Pool</button>
+                <div class="relative group w-full">
+                  <button class="stakeholder-btn active" type="button">
+                    Agent
+                  </button>
+                  <div
+                    class="tooltip-bubble tooltip-left hidden group-hover:block transition-opacity duration-200"
+                  >
+                    Onboards customers and gives to dive centers
+                  </div>
+                </div>
+                <button class="stakeholder-btn" type="button">Equipment</button>
+                <button class="stakeholder-btn" type="button">
+                  Liveaboard
+                </button>
+              </div>
+              <div class="flex flex-col gap-3">
+                <button class="stakeholder-btn" type="button">Dive Site</button>
+                <button class="stakeholder-btn" type="button">
+                  Dive Resort
+                </button>
+                <button class="stakeholder-btn" type="button">
+                  Dive Center
+                </button>
+                <button class="stakeholder-btn" type="button">
+                  Compressor
+                </button>
+                <div class="relative group w-full">
+                  <button class="stakeholder-btn active" type="button">
+                    Instructor
+                  </button>
+                  <div
+                    class="tooltip-bubble tooltip-right hidden group-hover:block transition-opacity duration-200"
+                  >
+                    Teaches courses and guides customers
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-6">
+            <button
+              class="w-full py-4 bg-primary text-white text-[11px] font-bold uppercase tracking-[0.25em] rounded hover:bg-opacity-90 transition-all duration-300 transform active:scale-[0.99] shadow-md shadow-primary/20"
+              type="submit"
+            >
+              Create Account
+            </button>
+          </div>
+        </form>
+        <div class="mt-12 text-center">
+          <p class="text-[10px] text-gray-400 tracking-wider uppercase">
+            Already have an account?
+            <a
+              class="text-slate-800 dark:text-slate-100 font-bold hover:text-primary dark:hover:text-primary transition-colors ml-1"
+              href="signin.html"
+              >Sign In</a
+            >
+          </p>
+        </div>
+      </div>
+    </main>
+    <button
+      id="darkToggle"
+      class="fixed bottom-6 right-6 w-9 h-9 flex items-center justify-center rounded-full border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:border-primary hover:text-primary transition-colors z-50"
+      title="Toggle dark mode"
+    >
+      <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+    </button>
+    <script>
+      document.getElementById('darkToggle').addEventListener('click', function () {
+        document.documentElement.classList.toggle('dark');
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Coral House Dive Resort | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: { primary: "#1978e5", "background-light": "#f6f7f8", "background-dark": "#111821" },
+            fontFamily: { display: ["Inter", "sans-serif"] },
+            borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body { font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      .nav-link { @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors; }
+      .nav-link.active { @apply text-primary; }
+      .date-num { @apply w-7 h-7 flex items-center justify-center rounded-full text-sm font-medium text-slate-500 dark:text-slate-400; }
+      .date-num.today { @apply bg-primary text-white font-bold; }
+      .bk-bar { @apply absolute text-[9px] leading-tight rounded px-1.5 py-1 cursor-pointer hover:opacity-80 transition-opacity no-underline border border-black; }
+      .diver-line { @apply flex items-baseline justify-between gap-1; }
+      .diver-name { @apply font-medium truncate; }
+      .diver-abbrev { @apply font-bold flex-shrink-0; }
+      .bk-bar.draft { @apply bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400; }
+      .bk-bar.pending { @apply bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400; }
+      .bk-bar.active { @apply bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400; }
+      .bk-bar.completed { @apply bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400; }
+      .room-chip { @apply inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] font-semibold; }
+      .room-chip.occupied { @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400; }
+      .room-chip.available { @apply bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400; }
+      .widget-card { @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-5; }
+      .widget-title { @apply text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4; }
+      .dropdown-panel { @apply absolute top-full left-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .dropdown-panel.open { @apply block; }
+      .dropdown-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer; }
+      .user-panel { @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .user-panel.open { @apply block; }
+      .user-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer; }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen selection:bg-primary/20">
+    <!-- Nav -->
+    <nav class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm">
+      <div class="px-8 h-16 flex items-center justify-between">
+        <span class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white">Dive Dispatch</span>
+        <div class="flex items-center gap-8">
+          <a class="nav-link active" href="#">Dashboard</a>
+          <a class="nav-link" href="#">Rooms</a>
+          <div class="relative" id="res-wrap">
+            <button id="res-btn" onclick="toggleResources(event)" class="nav-link flex items-center gap-0.5">
+              Resources<span class="material-symbols-outlined text-[14px] leading-none" id="res-chevron">expand_more</span>
+            </button>
+            <div class="dropdown-panel" id="res-panel">
+              <a class="dropdown-item" href="../resources-instructors.html"><span class="material-symbols-outlined text-[16px]">person</span>Instructors</a>
+              <a class="dropdown-item" href="../resources-boats.html"><span class="material-symbols-outlined text-[16px]">directions_boat</span>Boats</a>
+              <a class="dropdown-item" href="../resources-equipment.html"><span class="material-symbols-outlined text-[16px]">inventory_2</span>Equipment</a>
+              <a class="dropdown-item" href="../Shared/Availability/resources-pools.html"><span class="material-symbols-outlined text-[16px]">pool</span>Pools</a>
+              <a class="dropdown-item" href="../resources-compressors.html"><span class="material-symbols-outlined text-[16px]">compress</span>Compressors</a>
+              <a class="dropdown-item" href="../resources-dive-sites.html"><span class="material-symbols-outlined text-[16px]">location_on</span>Dive Sites</a>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="darkToggle" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle dark mode">
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+          <div class="relative" id="user-wrap">
+            <button onclick="toggleUser(event)" class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+              <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">ML</div>
+              <span class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Matt Lee</span>
+              <span class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block">expand_more</span>
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="../Shared/settings.html"><span class="material-symbols-outlined text-[16px]">settings</span>Settings</a>
+              <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
+              <a class="user-item hover:text-red-500" href="../Shared/landing.html"><span class="material-symbols-outlined text-[16px]">logout</span>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="px-8 py-8 max-w-screen-xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex-1"></div>
+        <h1 class="text-3xl font-light tracking-tight text-slate-900 dark:text-white">Coral House Dive Resort</h1>
+        <div class="flex-1 flex justify-end">
+          <a href="../Shared/Booking/booking-new.html" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg text-[11px] uppercase tracking-widest transition-all shadow-md shadow-primary/20 hover:shadow-primary/30 flex items-center gap-2 no-underline">
+            <span class="material-symbols-outlined text-base">add</span>New Booking
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+
+        <!-- Calendar -->
+        <div class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-2">
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+              <h2 class="text-sm font-semibold text-slate-800 dark:text-white w-36 text-center">February 2026</h2>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+            </div>
+            <button class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700">Today</button>
+          </div>
+
+          <div class="grid grid-cols-7 border-b border-slate-100 dark:border-slate-800">
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Sun</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Mon</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Tue</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Wed</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Thu</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Fri</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Sat</div>
+          </div>
+
+          <div class="divide-y divide-slate-100 dark:divide-slate-800">
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">1</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">2</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">3</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">4</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">5</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">6</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">7</span></div>
+              </div>
+              <div id="week-1-events"></div>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">8</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">9</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">10</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">11</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">12</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">13</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">14</span></div>
+              </div>
+              <div id="week-2-events"></div>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">15</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end bg-blue-50/60 dark:bg-blue-950/20"><span class="date-num today">16</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">17</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">18</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">19</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">20</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">21</span></div>
+              </div>
+              <div id="week-3-events"></div>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">22</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">23</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">24</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">25</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">26</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">27</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">28</span></div>
+              </div>
+              <div id="week-4-events"></div>
+            </div>
+          </div>
+
+          <div class="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-5 flex-wrap">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600">Status</span>
+            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0"></span><span class="text-[10px] text-slate-400">Pending</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span><span class="text-[10px] text-slate-400">Active</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></span><span class="text-[10px] text-slate-400">Completed</span></div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Room Availability -->
+        <div class="flex flex-col gap-4">
+          <div class="widget-card">
+            <p class="widget-title">Room Availability — Today</p>
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">hotel</span>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Clownfish Suite</span>
+                </div>
+                <span class="room-chip occupied">Occupied</span>
+              </div>
+              <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">hotel</span>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Manta Room</span>
+                </div>
+                <span class="room-chip occupied">Occupied</span>
+              </div>
+              <div class="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">hotel</span>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Whale Shark Dorm</span>
+                </div>
+                <span class="room-chip available">Available</span>
+              </div>
+              <div class="flex items-center justify-between py-2">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[16px] text-slate-400">hotel</span>
+                  <span class="text-sm font-medium text-slate-700 dark:text-slate-300">Turtle Bay Room</span>
+                </div>
+                <span class="room-chip occupied">Occupied</span>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+              3 of 4 rooms occupied tonight
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script>
+      const COL_POSITIONS = [{ left: "2px" },{ left: "calc(14.286% + 2px)" },{ left: "calc(28.571% + 2px)" },{ left: "calc(42.857% + 2px)" },{ left: "calc(57.143% + 2px)" },{ left: "calc(71.429% + 2px)" },{ left: "calc(85.714% + 2px)" }];
+      const COL_WIDTHS = { 1: "calc(14.286% - 4px)", 2: "calc(28.571% - 4px)", 3: "calc(42.857% - 4px)", 4: "calc(57.143% - 4px)", 5: "calc(71.429% - 4px)", 6: "calc(85.714% - 4px)", 7: "calc(100% - 4px)" };
+      const DIVER_HEIGHT = 12, PADDING = 10, GAP = 2;
+      function bookingHeight(n) { return n * DIVER_HEIGHT + PADDING + GAP; }
+      function pack(bookings) {
+        const skyline = [0, 0, 0, 0, 0, 0, 0];
+        const placed = [];
+        const remaining = bookings.map((b, i) => ({ ...b, idx: i }));
+        while (remaining.length > 0) {
+          for (const b of remaining) b.ey = Math.max(...b.cols.map(c => skyline[c]));
+          remaining.sort((a, b) => a.ey !== b.ey ? a.ey - b.ey : a.cols.length !== b.cols.length ? a.cols.length - b.cols.length : bookingHeight(a.divers.length) - bookingHeight(b.divers.length));
+          const best = remaining.shift();
+          const h = bookingHeight(best.divers.length);
+          best.y = best.ey;
+          for (const c of best.cols) skyline[c] = best.y + h;
+          placed.push(best);
+        }
+        return { placed, height: Math.max(...skyline) };
+      }
+      function toHTML(placed, height) {
+        placed.sort((a, b) => a.y - b.y || a.cols[0] - b.cols[0]);
+        let html = `<div class="relative w-full" style="height:${height}px;">`;
+        for (const b of placed) {
+          html += `<a href="#" class="bk-bar ${b.status}" style="left:${COL_POSITIONS[b.cols[0]].left};width:${COL_WIDTHS[b.cols.length]};top:${b.y}px;">`;
+          for (const d of b.divers) html += `<div class="diver-line"><span class="diver-name">${d.name}</span><span class="diver-abbrev">${d.abbrev}</span></div>`;
+          html += `</a>`;
+        }
+        return html + `</div>`;
+      }
+
+      // Dive package bookings: 1–5 day stays
+      const week1 = [
+        { cols: [0, 1, 2], status: "completed", divers: [{ name: "Chen W. — Clownfish Suite", abbrev: "3d" }] },
+        { cols: [3, 4, 5, 6], status: "completed", divers: [{ name: "Park J. — Manta Room", abbrev: "4d" }] },
+      ];
+      const week2 = [
+        { cols: [1, 2], status: "completed", divers: [{ name: "Yamamoto K. — Turtle Bay", abbrev: "2d" }] },
+        { cols: [4, 5, 6], status: "active", divers: [{ name: "Hassan F. — Manta Room", abbrev: "3d" }] },
+        { cols: [0], status: "completed", divers: [{ name: "Singh R. — Clownfish Suite", abbrev: "1d" }] },
+      ];
+      const week3 = [
+        { cols: [0, 1, 2, 3, 4], status: "active", divers: [{ name: "Valentina C. — Clownfish Suite", abbrev: "5d" }] },
+        { cols: [1, 2, 3], status: "active", divers: [{ name: "Tanaka H. — Whale Shark Dorm", abbrev: "3d" }] },
+        { cols: [5, 6], status: "pending", divers: [{ name: "Lopez C. — Turtle Bay", abbrev: "2d" }] },
+      ];
+      const week4 = [
+        { cols: [0, 1, 2, 3], status: "pending", divers: [{ name: "Nguyen T. — Manta Room", abbrev: "4d" }] },
+        { cols: [4, 5, 6], status: "draft", divers: [{ name: "Schmidt O. — Clownfish Suite", abbrev: "3d" }] },
+      ];
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const weeks = [
+          { data: week1, id: "week-1-events" },
+          { data: week2, id: "week-2-events" },
+          { data: week3, id: "week-3-events" },
+          { data: week4, id: "week-4-events" },
+        ];
+        for (const w of weeks) {
+          const el = document.getElementById(w.id);
+          if (!el) continue;
+          const { placed, height } = pack(w.data);
+          el.innerHTML = toHTML(placed, height);
+        }
+      });
+    </script>
+
+    <script>
+      document.getElementById("darkToggle").addEventListener("click", function () { document.documentElement.classList.toggle("dark"); });
+      function toggleResources(e) {
+        e.stopPropagation();
+        const panel = document.getElementById("res-panel");
+        const chevron = document.getElementById("res-chevron");
+        const isOpen = panel.classList.toggle("open");
+        chevron.textContent = isOpen ? "expand_less" : "expand_more";
+        document.getElementById("user-panel").classList.remove("open");
+      }
+      function toggleUser(e) {
+        e.stopPropagation();
+        document.getElementById("user-panel").classList.toggle("open");
+        document.getElementById("res-panel").classList.remove("open");
+        document.getElementById("res-chevron").textContent = "expand_more";
+      }
+      document.addEventListener("click", function () {
+        document.getElementById("res-panel").classList.remove("open");
+        document.getElementById("user-panel").classList.remove("open");
+        document.getElementById("res-chevron").textContent = "expand_more";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Deep Blue Liveaboard | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: { primary: "#1978e5", "background-light": "#f6f7f8", "background-dark": "#111821" },
+            fontFamily: { display: ["Inter", "sans-serif"] },
+            borderRadius: { DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px" },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body { font-family: "Inter", sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+      .nav-link { @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors; }
+      .nav-link.active { @apply text-primary; }
+      .date-num { @apply w-7 h-7 flex items-center justify-center rounded-full text-sm font-medium text-slate-500 dark:text-slate-400; }
+      .date-num.today { @apply bg-primary text-white font-bold; }
+      .bk-bar { @apply absolute text-[9px] leading-tight rounded px-1.5 py-1 cursor-pointer hover:opacity-80 transition-opacity no-underline border border-black; }
+      .diver-line { @apply flex items-baseline justify-between gap-1; }
+      .diver-name { @apply font-medium truncate; }
+      .diver-abbrev { @apply font-bold flex-shrink-0; }
+      .bk-bar.draft { @apply bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400; }
+      .bk-bar.pending { @apply bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400; }
+      .bk-bar.active { @apply bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400; }
+      .bk-bar.completed { @apply bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400; }
+      .state-badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold flex-shrink-0; }
+      .state-badge.pending { @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400; }
+      .state-badge.active { @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400; }
+      .state-badge.completed { @apply bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400; }
+      .widget-card { @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-5; }
+      .widget-title { @apply text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4; }
+      .dropdown-panel { @apply absolute top-full left-0 mt-2 w-52 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .dropdown-panel.open { @apply block; }
+      .dropdown-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer; }
+      .user-panel { @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden; }
+      .user-panel.open { @apply block; }
+      .user-item { @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer; }
+      .occ-bar-fill { @apply h-2 rounded-full bg-primary transition-all; }
+    </style>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen selection:bg-primary/20">
+    <!-- Nav -->
+    <nav class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm">
+      <div class="px-8 h-16 flex items-center justify-between">
+        <span class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white">Dive Dispatch</span>
+        <div class="flex items-center gap-8">
+          <a class="nav-link active" href="#">Dashboard</a>
+          <a class="nav-link" href="#">Voyages</a>
+          <a class="nav-link" href="#">Cabins</a>
+          <div class="relative" id="res-wrap">
+            <button id="res-btn" onclick="toggleResources(event)" class="nav-link flex items-center gap-0.5">
+              Resources<span class="material-symbols-outlined text-[14px] leading-none" id="res-chevron">expand_more</span>
+            </button>
+            <div class="dropdown-panel" id="res-panel">
+              <a class="dropdown-item" href="../resources-instructors.html"><span class="material-symbols-outlined text-[16px]">person</span>Instructors</a>
+              <a class="dropdown-item" href="../resources-boats.html"><span class="material-symbols-outlined text-[16px]">directions_boat</span>Boats</a>
+              <a class="dropdown-item" href="../resources-equipment.html"><span class="material-symbols-outlined text-[16px]">inventory_2</span>Equipment</a>
+              <a class="dropdown-item" href="../Shared/Availability/resources-pools.html"><span class="material-symbols-outlined text-[16px]">pool</span>Pools</a>
+              <a class="dropdown-item" href="../resources-compressors.html"><span class="material-symbols-outlined text-[16px]">compress</span>Compressors</a>
+              <a class="dropdown-item" href="../resources-dive-sites.html"><span class="material-symbols-outlined text-[16px]">location_on</span>Dive Sites</a>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="darkToggle" class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="Toggle dark mode">
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+          <div class="relative" id="user-wrap">
+            <button onclick="toggleUser(event)" class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1">
+              <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">ML</div>
+              <span class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300">Matt Lee</span>
+              <span class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block">expand_more</span>
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="../Shared/settings.html"><span class="material-symbols-outlined text-[16px]">settings</span>Settings</a>
+              <div class="my-1 border-t border-slate-100 dark:border-slate-800"></div>
+              <a class="user-item hover:text-red-500" href="../Shared/landing.html"><span class="material-symbols-outlined text-[16px]">logout</span>Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="px-8 py-8 max-w-screen-xl mx-auto">
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex-1"></div>
+        <h1 class="text-3xl font-light tracking-tight text-slate-900 dark:text-white">Deep Blue Liveaboard</h1>
+        <div class="flex-1 flex justify-end">
+          <a href="../Shared/Booking/booking-new.html" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-lg text-[11px] uppercase tracking-widest transition-all shadow-md shadow-primary/20 hover:shadow-primary/30 flex items-center gap-2 no-underline">
+            <span class="material-symbols-outlined text-base">add</span>New Voyage
+          </a>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
+
+        <!-- Calendar -->
+        <div class="bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800">
+            <div class="flex items-center gap-2">
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined text-lg">chevron_left</span></button>
+              <h2 class="text-sm font-semibold text-slate-800 dark:text-white w-36 text-center">February 2026</h2>
+              <button class="w-8 h-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"><span class="material-symbols-outlined text-lg">chevron_right</span></button>
+            </div>
+            <button class="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-primary px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700">Today</button>
+          </div>
+
+          <div class="grid grid-cols-7 border-b border-slate-100 dark:border-slate-800">
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Sun</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Mon</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Tue</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Wed</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Thu</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Fri</div>
+            <div class="py-3 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">Sat</div>
+          </div>
+
+          <div class="divide-y divide-slate-100 dark:divide-slate-800">
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">1</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">2</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">3</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">4</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">5</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">6</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">7</span></div>
+              </div>
+              <div id="week-1-events"></div>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">8</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">9</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">10</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">11</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">12</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">13</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">14</span></div>
+              </div>
+              <div id="week-2-events"></div>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">15</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end bg-blue-50/60 dark:bg-blue-950/20"><span class="date-num today">16</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">17</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">18</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">19</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">20</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">21</span></div>
+              </div>
+              <div id="week-3-events"></div>
+            </div>
+            <div>
+              <div class="grid grid-cols-7 divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">22</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">23</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">24</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">25</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">26</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">27</span></div>
+                <div class="px-2 pt-2 pb-1 flex justify-end"><span class="date-num">28</span></div>
+              </div>
+              <div id="week-4-events"></div>
+            </div>
+          </div>
+
+          <div class="px-5 py-3 border-t border-slate-100 dark:border-slate-800 flex items-center gap-5 flex-wrap">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-slate-300 dark:text-slate-600">Status</span>
+            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0"></span><span class="text-[10px] text-slate-400">Pending</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-500 flex-shrink-0"></span><span class="text-[10px] text-slate-400">Active</span></div>
+            <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary flex-shrink-0"></span><span class="text-[10px] text-slate-400">Completed</span></div>
+          </div>
+        </div>
+
+        <!-- Sidebar: Vessel Occupancy -->
+        <div class="flex flex-col gap-4">
+          <div class="widget-card">
+            <p class="widget-title">Vessel Occupancy</p>
+            <div class="flex flex-col gap-5">
+              <!-- Voyage 1 -->
+              <div>
+                <div class="flex items-start justify-between mb-1">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Raja Ampat Explorer</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">7 days · Feb 3–9 · 12 cabins</p>
+                  </div>
+                  <span class="state-badge completed">Done</span>
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                  <div class="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="occ-bar-fill" style="width:100%"></div>
+                  </div>
+                  <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">12/12</span>
+                </div>
+              </div>
+              <!-- Voyage 2 -->
+              <div>
+                <div class="flex items-start justify-between mb-1">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Komodo Expedition</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">5 days · Feb 17–21 · 10 cabins</p>
+                  </div>
+                  <span class="state-badge active">Active</span>
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                  <div class="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="occ-bar-fill" style="width:80%"></div>
+                  </div>
+                  <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">8/10</span>
+                </div>
+              </div>
+              <!-- Voyage 3 -->
+              <div>
+                <div class="flex items-start justify-between mb-1">
+                  <div>
+                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Banda Sea Deep</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400">10 days · Feb 25–Mar 6 · 12 cabins</p>
+                  </div>
+                  <span class="state-badge pending">Pending</span>
+                </div>
+                <div class="flex items-center gap-2 mt-2">
+                  <div class="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="occ-bar-fill" style="width:50%"></div>
+                  </div>
+                  <span class="text-[11px] font-semibold text-slate-700 dark:text-slate-300">6/12</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script>
+      const COL_POSITIONS = [{ left: "2px" },{ left: "calc(14.286% + 2px)" },{ left: "calc(28.571% + 2px)" },{ left: "calc(42.857% + 2px)" },{ left: "calc(57.143% + 2px)" },{ left: "calc(71.429% + 2px)" },{ left: "calc(85.714% + 2px)" }];
+      const COL_WIDTHS = { 1: "calc(14.286% - 4px)", 2: "calc(28.571% - 4px)", 3: "calc(42.857% - 4px)", 4: "calc(57.143% - 4px)", 5: "calc(71.429% - 4px)", 6: "calc(85.714% - 4px)", 7: "calc(100% - 4px)" };
+      const DIVER_HEIGHT = 12, PADDING = 10, GAP = 2;
+      function bookingHeight(n) { return n * DIVER_HEIGHT + PADDING + GAP; }
+      function pack(bookings) {
+        const skyline = [0, 0, 0, 0, 0, 0, 0];
+        const placed = [];
+        const remaining = bookings.map((b, i) => ({ ...b, idx: i }));
+        while (remaining.length > 0) {
+          for (const b of remaining) b.ey = Math.max(...b.cols.map(c => skyline[c]));
+          remaining.sort((a, b) => a.ey !== b.ey ? a.ey - b.ey : a.cols.length !== b.cols.length ? a.cols.length - b.cols.length : bookingHeight(a.divers.length) - bookingHeight(b.divers.length));
+          const best = remaining.shift();
+          const h = bookingHeight(best.divers.length);
+          best.y = best.ey;
+          for (const c of best.cols) skyline[c] = best.y + h;
+          placed.push(best);
+        }
+        return { placed, height: Math.max(...skyline) };
+      }
+      function toHTML(placed, height) {
+        placed.sort((a, b) => a.y - b.y || a.cols[0] - b.cols[0]);
+        let html = `<div class="relative w-full" style="height:${height}px;">`;
+        for (const b of placed) {
+          html += `<a href="#" class="bk-bar ${b.status}" style="left:${COL_POSITIONS[b.cols[0]].left};width:${COL_WIDTHS[b.cols.length]};top:${b.y}px;">`;
+          for (const d of b.divers) html += `<div class="diver-line"><span class="diver-name">${d.name}</span><span class="diver-abbrev">${d.abbrev}</span></div>`;
+          html += `</a>`;
+        }
+        return html + `</div>`;
+      }
+
+      // Liveaboard trips: multi-day spans (Raja Ampat 7d, Komodo 5d, Banda Sea 10d)
+      // Raja Ampat: Feb 3 (Tue=col2) to Feb 9 (Mon→col1 next week) — show week1 portion (col2-6) + week2 portion (col0-1)
+      // Komodo: Feb 17 (Tue=col2) to Feb 21 (Sat=col6)
+      // Banda Sea: Feb 25 (Wed=col3) to Mar 6 — show week4 portion (col3-6)
+      const week1 = [
+        { cols: [2, 3, 4, 5, 6], status: "completed", divers: [{ name: "Raja Ampat Explorer", abbrev: "7d" }, { name: "12 divers", abbrev: "" }] },
+      ];
+      const week2 = [
+        { cols: [0, 1], status: "completed", divers: [{ name: "Raja Ampat Explorer (cont.)", abbrev: "" }] },
+        { cols: [3, 4, 5, 6], status: "active", divers: [{ name: "Komodo Expedition", abbrev: "5d" }, { name: "8 divers", abbrev: "" }] },
+      ];
+      const week3 = [
+        { cols: [1, 2, 3, 4, 5], status: "active", divers: [{ name: "Komodo Expedition (cont.)", abbrev: "" }] },
+      ];
+      const week4 = [
+        { cols: [3, 4, 5, 6], status: "pending", divers: [{ name: "Banda Sea Deep", abbrev: "10d" }, { name: "6 divers", abbrev: "" }] },
+      ];
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const weeks = [
+          { data: week1, id: "week-1-events" },
+          { data: week2, id: "week-2-events" },
+          { data: week3, id: "week-3-events" },
+          { data: week4, id: "week-4-events" },
+        ];
+        for (const w of weeks) {
+          const el = document.getElementById(w.id);
+          if (!el) continue;
+          const { placed, height } = pack(w.data);
+          el.innerHTML = toHTML(placed, height);
+        }
+      });
+    </script>
+
+    <script>
+      document.getElementById("darkToggle").addEventListener("click", function () { document.documentElement.classList.toggle("dark"); });
+      function toggleResources(e) {
+        e.stopPropagation();
+        const panel = document.getElementById("res-panel");
+        const chevron = document.getElementById("res-chevron");
+        const isOpen = panel.classList.toggle("open");
+        chevron.textContent = isOpen ? "expand_less" : "expand_more";
+        document.getElementById("user-panel").classList.remove("open");
+      }
+      function toggleUser(e) {
+        e.stopPropagation();
+        document.getElementById("user-panel").classList.toggle("open");
+        document.getElementById("res-panel").classList.remove("open");
+        document.getElementById("res-chevron").textContent = "expand_more";
+      }
+      document.addEventListener("click", function () {
+        document.getElementById("res-panel").classList.remove("open");
+        document.getElementById("user-panel").classList.remove("open");
+        document.getElementById("res-chevron").textContent = "expand_more";
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html class="" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Contact Form | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .form-input {
+        @apply w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-sm text-slate-800 dark:text-slate-200 placeholder:text-slate-300 dark:placeholder:text-slate-600 transition-all;
+      }
+      .form-input:focus {
+        border-color: #1978e5;
+        outline: none;
+        box-shadow: 0 0 0 1px #1978e5;
+      }
+      .form-label {
+        @apply block text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1.5;
+      }
+      .step-icon {
+        @apply w-10 h-10 flex items-center justify-center rounded-full text-[12px] font-bold;
+      }
+      .step-done {
+        @apply bg-emerald-500 text-white;
+      }
+      .step-current {
+        @apply bg-primary text-white;
+      }
+      .step-pending {
+        @apply text-slate-400;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col selection:bg-primary/20"
+  >
+
+    <!-- Minimal header -->
+    <header class="bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900">
+      <div class="max-w-[600px] mx-auto px-5 h-14 flex items-center justify-between">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Dive Dispatch</p>
+          <p class="text-xs font-semibold text-slate-700 dark:text-slate-200">Matt &amp; Ms. Mermaid's Dive Center</p>
+        </div>
+        <button
+          id="darkToggle"
+          class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          title="Toggle dark mode"
+        >
+          <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-grow py-8 px-5">
+      <div class="max-w-[600px] mx-auto">
+
+        <!-- Booking context banner -->
+        <div class="mb-6 p-4 bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Your Booking</p>
+            <p class="text-[11px] font-bold px-2.5 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full">0 of 4 forms done</p>
+          </div>
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">Advanced Open Water — PADI</p>
+              <p class="text-xs text-slate-400 mt-0.5">March 1 – 2, 2025 · Matt &amp; Ms. Mermaid's Dive Center</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress tracker -->
+        <div class="mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+          <div class="flex items-center justify-between gap-3">
+            <!-- Contact -->
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-current">1</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Contact</p>
+            </div>
+            <!-- Medical -->
+            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-pending">2</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Medical</p>
+            </div>
+            <!-- Liability -->
+            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-pending">3</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Liability</p>
+            </div>
+            <!-- Equipment -->
+            <div class="flex-1 h-px bg-slate-200 dark:bg-slate-700"></div>
+            <div class="flex flex-col items-center gap-1.5 flex-1">
+              <div class="step-icon step-pending">4</div>
+              <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Equipment</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form class="space-y-6" onsubmit="event.preventDefault(); window.location.href='customer-portal-medical.html'">
+          <div>
+            <h2 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">Contact Information</h2>
+            <p class="text-xs text-slate-400">Your personal and emergency contact details.</p>
+          </div>
+
+          <!-- Personal Information -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2">Personal Information</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="sm:col-span-2">
+                <label class="form-label" for="c-name">Full Name <span class="text-red-500">*</span></label>
+                <input class="form-input" id="c-name" type="text" placeholder="First and last name" />
+              </div>
+              <div>
+                <label class="form-label" for="c-email">Email <span class="text-red-500">*</span></label>
+                <input class="form-input" id="c-email" type="email" placeholder="name@example.com" />
+              </div>
+              <div>
+                <label class="form-label" for="c-phone">Phone <span class="text-red-500">*</span></label>
+                <input class="form-input" id="c-phone" type="tel" placeholder="+1 555 000 0000" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2">Emergency Contact</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label" for="c-ec-name">Emergency Contact Name <span class="text-red-500">*</span></label>
+                <input class="form-input" id="c-ec-name" type="text" placeholder="Full name" />
+              </div>
+              <div>
+                <label class="form-label" for="c-ec-phone">Emergency Contact Phone <span class="text-red-500">*</span></label>
+                <input class="form-input" id="c-ec-phone" type="tel" placeholder="+1 555 000 0000" />
+              </div>
+              <div>
+                <label class="form-label" for="c-ec-relation">Relationship to You</label>
+                <input class="form-input" id="c-ec-relation" type="text" placeholder="e.g. Spouse, Parent, Friend" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Diving Certification -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2">Diving Certification</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="form-label" for="c-agency">Cert Agency</label>
+                <select class="form-input" id="c-agency">
+                  <option value="">Select</option>
+                  <option>PADI</option><option>SSI</option><option>NAUI</option><option>BSAC</option><option>CMAS</option><option>None</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" for="c-cert">Certification Level</label>
+                <select class="form-input" id="c-cert">
+                  <option value="">Select</option>
+                  <option>Open Water</option><option>Advanced Open Water</option><option>Rescue Diver</option><option>Divemaster</option><option>Instructor</option><option>None</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" for="c-certnum">Cert Number</label>
+                <input class="form-input" id="c-certnum" type="text" placeholder="e.g. 1234567890" />
+              </div>
+              <div>
+                <label class="form-label" for="c-exp">Years of Diving Experience</label>
+                <select class="form-input" id="c-exp">
+                  <option value="">Select</option>
+                  <option>Less than 1 year</option><option>1–3 years</option><option>3–5 years</option><option>5–10 years</option><option>10+ years</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Health & Allergies -->
+          <div class="space-y-4">
+            <h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-2">Health Information</h3>
+
+            <div>
+              <label class="form-label" for="c-allergies">Known Allergies <span class="text-slate-400">(food, medication, environmental)</span></label>
+              <textarea class="form-input" id="c-allergies" rows="2" placeholder="List any known allergies, or write 'None'"></textarea>
+            </div>
+            <div>
+              <label class="form-label" for="c-medical-conditions">Medical Conditions <span class="text-slate-400">(if any)</span></label>
+              <textarea class="form-input" id="c-medical-conditions" rows="2" placeholder="Any relevant medical conditions we should know about"></textarea>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button type="submit" class="px-8 py-3 bg-primary text-white rounded-lg text-[11px] font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+              Submit Form
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </main>
+
+    <script>
+      // Dark mode
+      document.getElementById("darkToggle").addEventListener("click", function () {
+        document.documentElement.classList.toggle("dark");
+      });
+    </script>
+  </body>
+</html>

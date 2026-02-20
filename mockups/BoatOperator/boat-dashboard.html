@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Boat Manager Dashboard | Dive Dispatch</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "#1978e5",
+              "background-light": "#f6f7f8",
+              "background-dark": "#111821",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style type="text/tailwindcss">
+      body {
+        font-family: "Inter", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .nav-link {
+        @apply text-[11px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors;
+      }
+      .nav-link.active {
+        @apply text-primary;
+      }
+      .user-panel {
+        @apply absolute top-full right-0 mt-2 w-44 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 py-1.5 hidden;
+      }
+      .user-panel.open {
+        @apply block;
+      }
+      .user-item {
+        @apply flex items-center gap-3 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors cursor-pointer;
+      }
+      .widget-card {
+        @apply bg-white dark:bg-slate-900/40 rounded-xl border border-slate-100 dark:border-slate-800 p-5;
+      }
+      .widget-title {
+        @apply text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 mb-4;
+      }
+      .trip-row {
+        @apply flex flex-col md:flex-row md:items-center md:justify-between gap-4 py-4 border-b border-slate-100 dark:border-slate-800 last:border-0;
+      }
+      .trip-info {
+        @apply flex-1;
+      }
+      .trip-id {
+        @apply text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1;
+      }
+      .trip-title {
+        @apply text-sm font-semibold text-slate-800 dark:text-slate-200;
+      }
+      .trip-meta {
+        @apply text-xs text-slate-500 dark:text-slate-400 mt-1.5 flex flex-col gap-1;
+      }
+      .status-badge {
+        @apply inline-flex items-center px-3 py-1.5 rounded-full text-[10px] font-semibold whitespace-nowrap;
+      }
+      .status-badge.pending {
+        @apply bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400;
+      }
+      .status-badge.active {
+        @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400;
+      }
+      .status-badge.completed {
+        @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400;
+      }
+    </style>
+  </head>
+
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen selection:bg-primary/20"
+  >
+    <!-- ── Top Nav ──────────────────────────────────────────────────── -->
+    <nav
+      class="sticky top-0 z-40 bg-white dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-900 backdrop-blur-sm"
+    >
+      <div class="px-8 h-16 flex items-center justify-between">
+        <!-- Left: Logo + role -->
+        <div class="flex items-center gap-4">
+          <span
+            class="uppercase tracking-[0.3em] font-bold text-[10px] text-slate-800 dark:text-white"
+          >
+            Dive Dispatch
+          </span>
+          <span class="text-[10px] font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+            Boat Manager
+          </span>
+        </div>
+
+        <!-- Center nav links -->
+        <div class="hidden md:flex items-center gap-8 flex-1 justify-center">
+          <a href="#" class="nav-link active">Trips</a>
+          <a href="../Shared/Availability/boat-availability.html" class="nav-link">Availability</a>
+        </div>
+
+        <!-- Right: theme toggle + user -->
+        <div class="flex items-center justify-end gap-3">
+          <!-- Dark mode toggle -->
+          <button
+            id="darkToggle"
+            class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            title="Toggle dark mode"
+          >
+            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
+          </button>
+
+          <!-- User menu -->
+          <div class="relative" id="user-wrap">
+            <button
+              onclick="toggleUser(event)"
+              class="flex items-center gap-2 hover:opacity-80 transition-opacity ml-1"
+            >
+              <div
+                class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0"
+              >
+                M
+              </div>
+              <span
+                class="hidden md:block text-[11px] font-semibold uppercase tracking-widest text-slate-700 dark:text-slate-300"
+              >
+                Matt
+              </span>
+              <span
+                class="material-symbols-outlined text-slate-400 text-[14px] hidden md:block"
+                >expand_more</span
+              >
+            </button>
+            <div class="user-panel" id="user-panel">
+              <a class="user-item" href="../Shared/settings.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >settings</span
+                >
+                Settings
+              </a>
+              <div
+                class="my-1 border-t border-slate-100 dark:border-slate-800"
+              ></div>
+              <a class="user-item hover:text-red-500" href="../Shared/landing.html">
+                <span class="material-symbols-outlined text-[16px]"
+                  >logout</span
+                >
+                Sign Out
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="flex-grow py-8 px-8">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-8">This Week's Trips</h1>
+
+        <!-- Trips list -->
+        <div class="widget-card">
+          <div class="widget-title">Assigned Trips</div>
+
+          <!-- Trip 1 -->
+          <div class="trip-row">
+            <div class="trip-info">
+              <p class="trip-id">BK-2025-001</p>
+              <p class="trip-title">Coral Reef Exploration</p>
+              <div class="trip-meta">
+                <span>March 1, 2025 · 8:00 AM – 2:00 PM</span>
+                <span>4 divers · Twin Waves Boat</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge active">ACTIVE</span>
+            </div>
+          </div>
+
+          <!-- Trip 2 -->
+          <div class="trip-row">
+            <div class="trip-info">
+              <p class="trip-id">BK-2025-008</p>
+              <p class="trip-title">Advanced Open Water Course</p>
+              <div class="trip-meta">
+                <span>March 2, 2025 · 7:00 AM – 4:00 PM</span>
+                <span>6 divers · Twin Waves Boat</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge pending">PENDING</span>
+            </div>
+          </div>
+
+          <!-- Trip 3 -->
+          <div class="trip-row">
+            <div class="trip-info">
+              <p class="trip-id">BK-2025-015</p>
+              <p class="trip-title">Night Dive Adventure</p>
+              <div class="trip-meta">
+                <span>March 7, 2025 · 5:00 PM – 8:00 PM</span>
+                <span>3 divers · Speed Demon Boat</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge pending">PENDING</span>
+            </div>
+          </div>
+
+          <!-- Trip 4 -->
+          <div class="trip-row">
+            <div class="trip-info">
+              <p class="trip-id">BK-2025-023</p>
+              <p class="trip-title">Wreck Dive Training</p>
+              <div class="trip-meta">
+                <span>February 28, 2025 · 10:00 AM – 3:00 PM</span>
+                <span>2 divers · Twin Waves Boat</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="status-badge completed">COMPLETED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      function toggleUser(event) {
+        event.stopPropagation();
+        const panel = document.getElementById("user-panel");
+        panel.classList.toggle("open");
+      }
+
+      document.addEventListener("click", function() {
+        document.getElementById("user-panel").classList.remove("open");
+      });
+
+      document.getElementById("darkToggle").addEventListener("click", function () {
+        document.documentElement.classList.toggle("dark");
+      });
+    </script>
+  </body>
+</html>
