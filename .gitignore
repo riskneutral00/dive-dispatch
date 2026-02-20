@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI tool redirect files (static boilerplate — never change, not worth tracking)
+CLAUDE.md
+.cursorrules
+.antigravity/
