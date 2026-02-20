@@ -1,0 +1,69 @@
+{
+  "_comment": "Real Clerk test user IDs for dev seeding. Created via Clerk Backend API. OTP code in dev mode: 424242.",
+  "stakeholders": {
+    "diveCenter": {
+      "clerkUserId": "user_39w3fVWHq03fNIB6j7nJyyNhC2U",
+      "email": "divecenter+clerk_test@example.com",
+      "name": "Dive Center",
+      "route": "/dc",
+      "operatorType": "DiveCenter"
+    },
+    "agent": {
+      "clerkUserId": "user_39w3h1RXki2xJHM12aU9yB71ovX",
+      "email": "agent+clerk_test@example.com",
+      "name": "Agent TestUser",
+      "route": "/agent",
+      "operatorType": "Agent"
+    },
+    "liveaboard": {
+      "clerkUserId": "user_39w3h3iiEc6R5IxANeMVIAQZJZC",
+      "email": "liveaboard+clerk_test@example.com",
+      "name": "Liveaboard TestUser",
+      "route": "/liveaboard",
+      "operatorType": "Liveaboard"
+    },
+    "diveResort": {
+      "clerkUserId": "user_39w3h5Gdvg5yaHKZqOc0LTWBTxz",
+      "email": "resort+clerk_test@example.com",
+      "name": "Dive Resort",
+      "route": "/resort",
+      "operatorType": "DiveResort"
+    },
+    "instructor": {
+      "clerkUserId": "user_39w3h3trE0FIWhA82CaaQSpDcHo",
+      "email": "instructor+clerk_test@example.com",
+      "name": "Instructor TestUser",
+      "route": "/instructor"
+    },
+    "boatManager": {
+      "clerkUserId": "user_39w3h40akapIiAOcLkm2QyvDmo6",
+      "email": "boat+clerk_test@example.com",
+      "name": "Boat Manager",
+      "route": "/boat"
+    },
+    "equipmentManager": {
+      "clerkUserId": "user_39w3hHU7eRe1BgPicJdt4HQqF6t",
+      "email": "gear+clerk_test@example.com",
+      "name": "Gear Manager",
+      "route": "/gear"
+    },
+    "poolManager": {
+      "clerkUserId": "user_39w3hDrDLa2T95C7KdRj6yNeKat",
+      "email": "pool+clerk_test@example.com",
+      "name": "Pool Manager",
+      "route": "/pool"
+    },
+    "compressorManager": {
+      "clerkUserId": "user_39w3hH3thkietD39H7r8Wn1AYna",
+      "email": "air+clerk_test@example.com",
+      "name": "Air Manager",
+      "route": "/air"
+    },
+    "siteManager": {
+      "clerkUserId": "user_39w3hAKyiaESq40C1qDu4aMRqhd",
+      "email": "site+clerk_test@example.com",
+      "name": "Site Manager",
+      "route": "/site"
+    }
+  }
+}

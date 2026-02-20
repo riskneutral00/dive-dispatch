@@ -42,5 +42,6 @@ next-env.d.ts
 
 # AI tool redirect files (static boilerplate — never change, not worth tracking)
 CLAUDE.md
+GEMINI.md
 .cursorrules
 .antigravity/
